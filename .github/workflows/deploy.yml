@@ -34,10 +34,8 @@ jobs:
       - name: Build (inkl. Typprüfung)
         run: npm run build
 
+      # Setzt voraus, dass Pages im Repository auf Source "GitHub Actions" steht.
       - uses: actions/configure-pages@v5
-        with:
-          # Aktiviert GitHub Pages beim ersten Lauf automatisch.
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
