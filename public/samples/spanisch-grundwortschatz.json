@@ -1,0 +1,227 @@
+{
+  "name": "Spanisch Grundwortschatz",
+  "languageA": "Spanisch",
+  "languageB": "Deutsch",
+  "entries": [
+    { "wordA": "ser", "wordB": "sein (dauerhaft)", "examples": [
+      { "sentenceA": "soy · eres · es · somos · sois · son", "sentenceB": "ich bin · du bist · er/sie ist · wir sind · ihr seid · sie sind" },
+      { "sentenceA": "Soy de Alemania.", "sentenceB": "Ich bin aus Deutschland." } ] },
+    { "wordA": "estar", "wordB": "sein (Zustand, Ort)", "examples": [
+      { "sentenceA": "estoy · estás · está · estamos · estáis · están", "sentenceB": "ich bin · du bist · er/sie ist · wir sind · ihr seid · sie sind" },
+      { "sentenceA": "Estoy en casa.", "sentenceB": "Ich bin zu Hause." } ] },
+    { "wordA": "tener", "wordB": "haben", "examples": [
+      { "sentenceA": "tengo · tienes · tiene · tenemos · tenéis · tienen", "sentenceB": "ich habe · du hast · er/sie hat · wir haben · ihr habt · sie haben" },
+      { "sentenceA": "Tengo un perro.", "sentenceB": "Ich habe einen Hund." } ] },
+    { "wordA": "hacer", "wordB": "machen, tun", "examples": [
+      { "sentenceA": "hago · haces · hace · hacemos · hacéis · hacen", "sentenceB": "ich mache · du machst · er/sie macht · wir machen · ihr macht · sie machen" },
+      { "sentenceA": "Hago la comida.", "sentenceB": "Ich mache das Essen." } ] },
+    { "wordA": "ir", "wordB": "gehen, fahren", "examples": [
+      { "sentenceA": "voy · vas · va · vamos · vais · van", "sentenceB": "ich gehe · du gehst · er/sie geht · wir gehen · ihr geht · sie gehen" },
+      { "sentenceA": "Voy a casa.", "sentenceB": "Ich gehe nach Hause." } ] },
+    { "wordA": "poder", "wordB": "können", "examples": [
+      { "sentenceA": "puedo · puedes · puede · podemos · podéis · pueden", "sentenceB": "ich kann · du kannst · er/sie kann · wir können · ihr könnt · sie können" },
+      { "sentenceA": "No puedo hoy.", "sentenceB": "Ich kann heute nicht." } ] },
+    { "wordA": "querer", "wordB": "wollen, mögen", "examples": [
+      { "sentenceA": "quiero · quieres · quiere · queremos · queréis · quieren", "sentenceB": "ich will · du willst · er/sie will · wir wollen · ihr wollt · sie wollen" },
+      { "sentenceA": "Quiero un café.", "sentenceB": "Ich möchte einen Kaffee." } ] },
+    { "wordA": "saber", "wordB": "wissen, können", "examples": [
+      { "sentenceA": "sé · sabes · sabe · sabemos · sabéis · saben", "sentenceB": "ich weiß · du weißt · er/sie weiß · wir wissen · ihr wisst · sie wissen" },
+      { "sentenceA": "No sé nada.", "sentenceB": "Ich weiß nichts." } ] },
+    { "wordA": "decir", "wordB": "sagen", "examples": [
+      { "sentenceA": "digo · dices · dice · decimos · decís · dicen", "sentenceB": "ich sage · du sagst · er/sie sagt · wir sagen · ihr sagt · sie sagen" },
+      { "sentenceA": "Digo la verdad.", "sentenceB": "Ich sage die Wahrheit." } ] },
+    { "wordA": "ver", "wordB": "sehen", "examples": [
+      { "sentenceA": "veo · ves · ve · vemos · veis · ven", "sentenceB": "ich sehe · du siehst · er/sie sieht · wir sehen · ihr seht · sie sehen" },
+      { "sentenceA": "Veo el mar.", "sentenceB": "Ich sehe das Meer." } ] },
+    { "wordA": "dar", "wordB": "geben", "examples": [
+      { "sentenceA": "doy · das · da · damos · dais · dan", "sentenceB": "ich gebe · du gibst · er/sie gibt · wir geben · ihr gebt · sie geben" },
+      { "sentenceA": "Te doy el libro.", "sentenceB": "Ich gebe dir das Buch." } ] },
+    { "wordA": "venir", "wordB": "kommen", "examples": [
+      { "sentenceA": "vengo · vienes · viene · venimos · venís · vienen", "sentenceB": "ich komme · du kommst · er/sie kommt · wir kommen · ihr kommt · sie kommen" },
+      { "sentenceA": "Vengo mañana.", "sentenceB": "Ich komme morgen." } ] },
+    { "wordA": "hablar", "wordB": "sprechen", "examples": [
+      { "sentenceA": "hablo · hablas · habla · hablamos · habláis · hablan", "sentenceB": "ich spreche · du sprichst · er/sie spricht · wir sprechen · ihr sprecht · sie sprechen" },
+      { "sentenceA": "Hablo un poco de español.", "sentenceB": "Ich spreche ein bisschen Spanisch." } ] },
+    { "wordA": "comer", "wordB": "essen", "examples": [
+      { "sentenceA": "como · comes · come · comemos · coméis · comen", "sentenceB": "ich esse · du isst · er/sie isst · wir essen · ihr esst · sie essen" },
+      { "sentenceA": "Como pan.", "sentenceB": "Ich esse Brot." } ] },
+    { "wordA": "beber", "wordB": "trinken", "examples": [
+      { "sentenceA": "bebo · bebes · bebe · bebemos · bebéis · beben", "sentenceB": "ich trinke · du trinkst · er/sie trinkt · wir trinken · ihr trinkt · sie trinken" },
+      { "sentenceA": "Bebo agua.", "sentenceB": "Ich trinke Wasser." } ] },
+    { "wordA": "vivir", "wordB": "leben, wohnen", "examples": [
+      { "sentenceA": "vivo · vives · vive · vivimos · vivís · viven", "sentenceB": "ich wohne · du wohnst · er/sie wohnt · wir wohnen · ihr wohnt · sie wohnen" },
+      { "sentenceA": "Vivo en Berlín.", "sentenceB": "Ich wohne in Berlin." } ] },
+    { "wordA": "trabajar", "wordB": "arbeiten", "examples": [
+      { "sentenceA": "trabajo · trabajas · trabaja · trabajamos · trabajáis · trabajan", "sentenceB": "ich arbeite · du arbeitest · er/sie arbeitet · wir arbeiten · ihr arbeitet · sie arbeiten" },
+      { "sentenceA": "Trabajo mucho.", "sentenceB": "Ich arbeite viel." } ] },
+    { "wordA": "necesitar", "wordB": "brauchen", "examples": [
+      { "sentenceA": "necesito · necesitas · necesita · necesitamos · necesitáis · necesitan", "sentenceB": "ich brauche · du brauchst · er/sie braucht · wir brauchen · ihr braucht · sie brauchen" },
+      { "sentenceA": "Necesito ayuda.", "sentenceB": "Ich brauche Hilfe." } ] },
+    { "wordA": "pensar", "wordB": "denken", "examples": [
+      { "sentenceA": "pienso · piensas · piensa · pensamos · pensáis · piensan", "sentenceB": "ich denke · du denkst · er/sie denkt · wir denken · ihr denkt · sie denken" },
+      { "sentenceA": "Pienso en ti.", "sentenceB": "Ich denke an dich." } ] },
+    { "wordA": "entender", "wordB": "verstehen", "examples": [
+      { "sentenceA": "entiendo · entiendes · entiende · entendemos · entendéis · entienden", "sentenceB": "ich verstehe · du verstehst · er/sie versteht · wir verstehen · ihr versteht · sie verstehen" },
+      { "sentenceA": "No entiendo nada.", "sentenceB": "Ich verstehe nichts." } ] },
+    { "wordA": "yo", "wordB": "ich", "examples": [
+      { "sentenceA": "Yo soy María.", "sentenceB": "Ich bin María." } ] },
+    { "wordA": "tú", "wordB": "du", "examples": [
+      { "sentenceA": "¿Tú eres Pedro?", "sentenceB": "Bist du Pedro?" } ] },
+    { "wordA": "él", "wordB": "er", "examples": [
+      { "sentenceA": "Él vive aquí.", "sentenceB": "Er wohnt hier." } ] },
+    { "wordA": "ella", "wordB": "sie (Einzahl)", "examples": [
+      { "sentenceA": "Ella habla mucho.", "sentenceB": "Sie spricht viel." } ] },
+    { "wordA": "nosotros", "wordB": "wir", "examples": [
+      { "sentenceA": "Nosotros vamos al cine.", "sentenceB": "Wir gehen ins Kino." } ] },
+    { "wordA": "vosotros", "wordB": "ihr", "examples": [
+      { "sentenceA": "¿Vosotros tenéis tiempo?", "sentenceB": "Habt ihr Zeit?" } ] },
+    { "wordA": "ellos", "wordB": "sie (Mehrzahl)", "examples": [
+      { "sentenceA": "Ellos trabajan hoy.", "sentenceB": "Sie arbeiten heute." } ] },
+    { "wordA": "usted", "wordB": "Sie (höflich)", "examples": [
+      { "sentenceA": "¿Usted habla alemán?", "sentenceB": "Sprechen Sie Deutsch?" } ] },
+    { "wordA": "sí", "wordB": "ja", "examples": [
+      { "sentenceA": "Sí, claro.", "sentenceB": "Ja, klar." } ] },
+    { "wordA": "no", "wordB": "nein, nicht", "examples": [
+      { "sentenceA": "No, gracias.", "sentenceB": "Nein, danke." } ] },
+    { "wordA": "y", "wordB": "und", "examples": [
+      { "sentenceA": "Pan y agua.", "sentenceB": "Brot und Wasser." } ] },
+    { "wordA": "o", "wordB": "oder", "examples": [
+      { "sentenceA": "¿Té o café?", "sentenceB": "Tee oder Kaffee?" } ] },
+    { "wordA": "pero", "wordB": "aber", "examples": [
+      { "sentenceA": "Es caro, pero bueno.", "sentenceB": "Es ist teuer, aber gut." } ] },
+    { "wordA": "porque", "wordB": "weil", "examples": [
+      { "sentenceA": "No voy porque estoy cansado.", "sentenceB": "Ich gehe nicht, weil ich müde bin." } ] },
+    { "wordA": "también", "wordB": "auch", "examples": [
+      { "sentenceA": "Yo también.", "sentenceB": "Ich auch." } ] },
+    { "wordA": "muy", "wordB": "sehr", "examples": [
+      { "sentenceA": "Es muy fácil.", "sentenceB": "Es ist sehr einfach." } ] },
+    { "wordA": "mucho", "wordB": "viel", "examples": [
+      { "sentenceA": "Gracias, mucho mejor.", "sentenceB": "Danke, viel besser." } ] },
+    { "wordA": "poco", "wordB": "wenig", "examples": [
+      { "sentenceA": "Hablo poco español.", "sentenceB": "Ich spreche wenig Spanisch." } ] },
+    { "wordA": "más", "wordB": "mehr", "examples": [
+      { "sentenceA": "Quiero más agua.", "sentenceB": "Ich möchte mehr Wasser." } ] },
+    { "wordA": "menos", "wordB": "weniger", "examples": [
+      { "sentenceA": "Hoy trabajo menos.", "sentenceB": "Heute arbeite ich weniger." } ] },
+    { "wordA": "aquí", "wordB": "hier", "examples": [
+      { "sentenceA": "Estoy aquí.", "sentenceB": "Ich bin hier." } ] },
+    { "wordA": "allí", "wordB": "dort", "examples": [
+      { "sentenceA": "El coche está allí.", "sentenceB": "Das Auto ist dort." } ] },
+    { "wordA": "ahora", "wordB": "jetzt", "examples": [
+      { "sentenceA": "Ahora no puedo.", "sentenceB": "Jetzt kann ich nicht." } ] },
+    { "wordA": "después", "wordB": "danach, später", "examples": [
+      { "sentenceA": "Hablamos después.", "sentenceB": "Wir sprechen später." } ] },
+    { "wordA": "antes", "wordB": "vorher", "examples": [
+      { "sentenceA": "Como antes de salir.", "sentenceB": "Ich esse, bevor ich gehe." } ] },
+    { "wordA": "siempre", "wordB": "immer", "examples": [
+      { "sentenceA": "Siempre llega tarde.", "sentenceB": "Er kommt immer zu spät." } ] },
+    { "wordA": "nunca", "wordB": "nie", "examples": [
+      { "sentenceA": "Nunca bebo alcohol.", "sentenceB": "Ich trinke nie Alkohol." } ] },
+    { "wordA": "hoy", "wordB": "heute", "examples": [
+      { "sentenceA": "Hoy hace sol.", "sentenceB": "Heute scheint die Sonne." } ] },
+    { "wordA": "mañana", "wordB": "morgen; der Morgen", "examples": [
+      { "sentenceA": "Mañana voy al médico.", "sentenceB": "Morgen gehe ich zum Arzt." } ] },
+    { "wordA": "ayer", "wordB": "gestern", "examples": [
+      { "sentenceA": "Ayer llovió mucho.", "sentenceB": "Gestern hat es viel geregnet." } ] },
+    { "wordA": "bueno", "wordB": "gut", "examples": [
+      { "sentenceA": "Es un buen libro.", "sentenceB": "Das ist ein gutes Buch." } ] },
+    { "wordA": "malo", "wordB": "schlecht", "examples": [
+      { "sentenceA": "El tiempo está malo.", "sentenceB": "Das Wetter ist schlecht." } ] },
+    { "wordA": "grande", "wordB": "groß", "examples": [
+      { "sentenceA": "La casa es grande.", "sentenceB": "Das Haus ist groß." } ] },
+    { "wordA": "pequeño", "wordB": "klein", "examples": [
+      { "sentenceA": "Tengo un coche pequeño.", "sentenceB": "Ich habe ein kleines Auto." } ] },
+    { "wordA": "nuevo", "wordB": "neu", "examples": [
+      { "sentenceA": "Es mi nuevo trabajo.", "sentenceB": "Das ist meine neue Arbeit." } ] },
+    { "wordA": "viejo", "wordB": "alt", "examples": [
+      { "sentenceA": "Mi coche es viejo.", "sentenceB": "Mein Auto ist alt." } ] },
+    { "wordA": "fácil", "wordB": "einfach, leicht", "examples": [
+      { "sentenceA": "El español es fácil.", "sentenceB": "Spanisch ist einfach." } ] },
+    { "wordA": "difícil", "wordB": "schwierig", "examples": [
+      { "sentenceA": "Es una pregunta difícil.", "sentenceB": "Das ist eine schwierige Frage." } ] },
+    { "wordA": "el hombre", "wordB": "der Mann", "examples": [
+      { "sentenceA": "El hombre lee el periódico.", "sentenceB": "Der Mann liest die Zeitung." } ] },
+    { "wordA": "la mujer", "wordB": "die Frau", "examples": [
+      { "sentenceA": "La mujer trabaja aquí.", "sentenceB": "Die Frau arbeitet hier." } ] },
+    { "wordA": "el niño", "wordB": "das Kind, der Junge", "examples": [
+      { "sentenceA": "El niño juega en el parque.", "sentenceB": "Das Kind spielt im Park." } ] },
+    { "wordA": "la gente", "wordB": "die Leute", "examples": [
+      { "sentenceA": "Hay mucha gente aquí.", "sentenceB": "Hier sind viele Leute." } ] },
+    { "wordA": "el amigo", "wordB": "der Freund", "examples": [
+      { "sentenceA": "Es mi mejor amigo.", "sentenceB": "Er ist mein bester Freund." } ] },
+    { "wordA": "la familia", "wordB": "die Familie", "examples": [
+      { "sentenceA": "Mi familia es pequeña.", "sentenceB": "Meine Familie ist klein." } ] },
+    { "wordA": "la casa", "wordB": "das Haus", "examples": [
+      { "sentenceA": "Voy a casa.", "sentenceB": "Ich gehe nach Hause." } ] },
+    { "wordA": "el agua", "wordB": "das Wasser", "examples": [
+      { "sentenceA": "Un vaso de agua, por favor.", "sentenceB": "Ein Glas Wasser, bitte." } ] },
+    { "wordA": "el día", "wordB": "der Tag", "examples": [
+      { "sentenceA": "Buenos días.", "sentenceB": "Guten Tag." } ] },
+    { "wordA": "la noche", "wordB": "die Nacht", "examples": [
+      { "sentenceA": "Buenas noches.", "sentenceB": "Gute Nacht." } ] },
+    { "wordA": "el año", "wordB": "das Jahr", "examples": [
+      { "sentenceA": "Tengo treinta años.", "sentenceB": "Ich bin dreißig Jahre alt." } ] },
+    { "wordA": "la hora", "wordB": "die Stunde, die Uhrzeit", "examples": [
+      { "sentenceA": "¿Qué hora es?", "sentenceB": "Wie spät ist es?" } ] },
+    { "wordA": "el tiempo", "wordB": "die Zeit; das Wetter", "examples": [
+      { "sentenceA": "No tengo tiempo.", "sentenceB": "Ich habe keine Zeit." } ] },
+    { "wordA": "la cosa", "wordB": "die Sache, das Ding", "examples": [
+      { "sentenceA": "Es una cosa importante.", "sentenceB": "Das ist eine wichtige Sache." } ] },
+    { "wordA": "el trabajo", "wordB": "die Arbeit", "examples": [
+      { "sentenceA": "Me gusta mi trabajo.", "sentenceB": "Ich mag meine Arbeit." } ] },
+    { "wordA": "la vida", "wordB": "das Leben", "examples": [
+      { "sentenceA": "Así es la vida.", "sentenceB": "So ist das Leben." } ] },
+    { "wordA": "uno", "wordB": "eins", "examples": [
+      { "sentenceA": "Solo tengo uno.", "sentenceB": "Ich habe nur eins." } ] },
+    { "wordA": "dos", "wordB": "zwei", "examples": [
+      { "sentenceA": "Dos cafés, por favor.", "sentenceB": "Zwei Kaffee, bitte." } ] },
+    { "wordA": "tres", "wordB": "drei", "examples": [
+      { "sentenceA": "Tengo tres hermanos.", "sentenceB": "Ich habe drei Geschwister." } ] },
+    { "wordA": "cuatro", "wordB": "vier", "examples": [
+      { "sentenceA": "Son las cuatro.", "sentenceB": "Es ist vier Uhr." } ] },
+    { "wordA": "cinco", "wordB": "fünf", "examples": [
+      { "sentenceA": "Cinco minutos, por favor.", "sentenceB": "Fünf Minuten, bitte." } ] },
+    { "wordA": "diez", "wordB": "zehn", "examples": [
+      { "sentenceA": "Cuesta diez euros.", "sentenceB": "Es kostet zehn Euro." } ] },
+    { "wordA": "¿qué?", "wordB": "was?", "examples": [
+      { "sentenceA": "¿Qué quieres?", "sentenceB": "Was willst du?" } ] },
+    { "wordA": "¿quién?", "wordB": "wer?", "examples": [
+      { "sentenceA": "¿Quién es?", "sentenceB": "Wer ist das?" } ] },
+    { "wordA": "¿dónde?", "wordB": "wo?", "examples": [
+      { "sentenceA": "¿Dónde está el baño?", "sentenceB": "Wo ist die Toilette?" } ] },
+    { "wordA": "¿cuándo?", "wordB": "wann?", "examples": [
+      { "sentenceA": "¿Cuándo llegas?", "sentenceB": "Wann kommst du an?" } ] },
+    { "wordA": "¿cómo?", "wordB": "wie?", "examples": [
+      { "sentenceA": "¿Cómo estás?", "sentenceB": "Wie geht es dir?" } ] },
+    { "wordA": "¿por qué?", "wordB": "warum?", "examples": [
+      { "sentenceA": "¿Por qué no vienes?", "sentenceB": "Warum kommst du nicht?" } ] },
+    { "wordA": "¿cuánto?", "wordB": "wie viel?", "examples": [
+      { "sentenceA": "¿Cuánto cuesta?", "sentenceB": "Wie viel kostet das?" } ] },
+    { "wordA": "con", "wordB": "mit", "examples": [
+      { "sentenceA": "Voy con mi amigo.", "sentenceB": "Ich gehe mit meinem Freund." } ] },
+    { "wordA": "sin", "wordB": "ohne", "examples": [
+      { "sentenceA": "Café sin azúcar.", "sentenceB": "Kaffee ohne Zucker." } ] },
+    { "wordA": "para", "wordB": "für, um zu", "examples": [
+      { "sentenceA": "Es para ti.", "sentenceB": "Das ist für dich." } ] },
+    { "wordA": "en", "wordB": "in, auf", "examples": [
+      { "sentenceA": "Estoy en el tren.", "sentenceB": "Ich bin im Zug." } ] },
+    { "wordA": "de", "wordB": "von, aus", "examples": [
+      { "sentenceA": "Soy de Múnich.", "sentenceB": "Ich bin aus München." } ] },
+    { "wordA": "a", "wordB": "zu, nach", "examples": [
+      { "sentenceA": "Voy a Madrid.", "sentenceB": "Ich fahre nach Madrid." } ] },
+    { "wordA": "sobre", "wordB": "über, auf", "examples": [
+      { "sentenceA": "El libro está sobre la mesa.", "sentenceB": "Das Buch liegt auf dem Tisch." } ] },
+    { "wordA": "hasta", "wordB": "bis", "examples": [
+      { "sentenceA": "Hasta mañana.", "sentenceB": "Bis morgen." } ] },
+    { "wordA": "gracias", "wordB": "danke", "examples": [
+      { "sentenceA": "Muchas gracias.", "sentenceB": "Vielen Dank." } ] },
+    { "wordA": "por favor", "wordB": "bitte", "examples": [
+      { "sentenceA": "La cuenta, por favor.", "sentenceB": "Die Rechnung, bitte." } ] },
+    { "wordA": "perdón", "wordB": "Entschuldigung", "examples": [
+      { "sentenceA": "Perdón, ¿qué hora es?", "sentenceB": "Entschuldigung, wie spät ist es?" } ] },
+    { "wordA": "hola", "wordB": "hallo", "examples": [
+      { "sentenceA": "¡Hola! ¿Cómo estás?", "sentenceB": "Hallo! Wie geht es dir?" } ] },
+    { "wordA": "adiós", "wordB": "tschüss", "examples": [
+      { "sentenceA": "Adiós, hasta luego.", "sentenceB": "Tschüss, bis später." } ] }
+  ]
+}
