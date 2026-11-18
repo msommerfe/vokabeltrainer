@@ -4,6 +4,7 @@ import {
   type ImportOutcome,
   type RawEntry,
   type RawExample,
+  type RawExercise,
 } from './validate';
 
 interface JsonShape {
@@ -11,6 +12,7 @@ interface JsonShape {
   languageA?: unknown;
   languageB?: unknown;
   entries?: unknown;
+  exercises?: unknown;
 }
 
 function toRawExamples(value: unknown): RawExample[] {
@@ -64,7 +66,32 @@ export function importFromJson(text: string, fallbackName: string): ImportOutcom
       languageA: shape.languageA,
       languageB: shape.languageB,
       entries,
+      exercises: toRawExercises(shape.exercises),
     },
     fallbackName,
   );
+}
+
+function toRawExercises(value: unknown): RawExercise[] {
+  if (value === undefined) {
+    return [];
+  }
+  if (!Array.isArray(value)) {
+    throw new ImportError('Das Feld "exercises" muss eine Liste sein.');
+  }
+  return value.map((exercise, index) => {
+    const record =
+      typeof exercise === 'object' && exercise !== null
+        ? (exercise as Record<string, unknown>)
+        : {};
+    return {
+      position: index + 1,
+      type: record['type'],
+      sentence: record['sentence'],
+      question: record['question'],
+      options: record['options'],
+      answer: record['answer'],
+      explanation: record['explanation'],
+    };
+  });
 }

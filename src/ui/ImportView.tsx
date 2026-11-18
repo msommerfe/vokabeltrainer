@@ -132,15 +132,18 @@ export function ImportView({ lists, onReadFile, onImport, onDone }: ImportViewPr
       {summary !== undefined ? (
         <div className="message message--ok" role="status">
           <p>
-            {summary.imported} Einträge in „{summary.listName}“ importiert.
+            {summary.imported} Einträge
+            {summary.exercises > 0 ? ` und ${String(summary.exercises)} Übungen` : ''} in „
+            {summary.listName}“ importiert.
           </p>
           {summary.issues.length > 0 ? (
             <>
-              <p>{summary.issues.length} Zeilen wurden übersprungen:</p>
+              <p>{summary.issues.length} Angaben wurden übersprungen:</p>
               <ul className="issue-list">
                 {summary.issues.slice(0, 20).map((issue) => (
-                  <li key={issue.position}>
-                    Position {issue.position}: {issue.reason}
+                  <li key={`${issue.scope ?? 'entry'}-${String(issue.position)}`}>
+                    {issue.scope === 'exercise' ? 'Übung' : 'Position'} {issue.position}:{' '}
+                    {issue.reason}
                   </li>
                 ))}
               </ul>

@@ -11,6 +11,7 @@ Karteikarten-Trainer für eigene Vokabellisten. Installierbare PWA, offline nutz
 - Die Sitzung läuft, bis alle Wörter gelernt sind oder sie mit **Beenden** abgeschlossen wird
 - Jede Bewertung wird sofort gespeichert — ein Abbruch mitten in der Sitzung verliert nichts
 - Abfrage in beide Richtungen, Fortschritt je Richtung getrennt
+- Zusätzlich **Übungen** je Liste: Lückentexte (Berühren zeigt die Lösung, Wischen bewertet) und Auswahlfragen A/B/C (Antippen wertet sofort aus), jeweils mit kurzer Erklärung. Eine Übung gilt nach einmal richtig als gelöst
 
 Alle Daten bleiben auf dem Gerät. Es gibt kein Backend und keine Übertragung an Dritte.
 
@@ -32,7 +33,9 @@ ich komme · du kommst · er/sie kommt · wir kommen · ihr kommt · sie kommen
 ```
 
 Jede Liste ist in **beide Richtungen** abfragbar — Spanisch → Deutsch und Deutsch → Spanisch erscheinen als zwei Kacheln. Separate Listen je Richtung sind nicht nötig, weil der Fortschritt ohnehin je Richtung getrennt gezählt wird.
+Als dritte Kachel bietet jede Liste **Übungen** an: je 10 Lückentexte und 10 Auswahlfragen zu Grammatik und Wortschatz der Liste, jeweils mit Erklärung. „Vokabeln zurücksetzen“ und „Übungen zurücksetzen“ wirken unabhängig voneinander.
 
+Ändern sich die mitgelieferten Listen mit einer neuen App-Version, werden sie in bestehenden Installationen beim nächsten Start aktualisiert. Der Fortschritt unveränderter Wörter und Übungen bleibt erhalten. Eine gelöschte mitgelieferte Liste wird nicht wieder angelegt. Wer die Dateien unter `public/samples/` ändert, erhöht `SAMPLES_VERSION` in [src/app/samples.ts](src/app/samples.ts), damit bestehende Installationen die Änderung übernehmen.
 ## Entwicklung
 
 ```powershell
@@ -94,6 +97,42 @@ Eigene Listen lassen sich als JSON oder CSV importieren. Die drei mitgelieferten
 ```
 
 Eine syntaktisch ungültige JSON-Datei wird vollständig abgelehnt. Einzelne Einträge ohne `wordA` oder `wordB` werden übersprungen und mit ihrer Position gemeldet.
+
+### Übungen
+
+Eine JSON-Liste kann zusätzlich den optionalen Block `exercises` enthalten. Dann erscheint in der Übersicht neben den beiden Abfragerichtungen die Kachel **Übungen**.
+
+```json
+{
+  "name": "Spanisch Verben",
+  "languageA": "Spanisch",
+  "languageB": "Deutsch",
+  "entries": [
+    { "wordA": "hablar", "wordB": "sprechen" }
+  ],
+  "exercises": [
+    {
+      "type": "gap",
+      "sentence": "Yo {hablo} español y tú {hablas} alemán.",
+      "explanation": "hablar im Präsens: yo hablo, tú hablas."
+    },
+    {
+      "type": "choice",
+      "question": "Nosotros ___ en Madrid.",
+      "options": ["vivo", "vivimos", "viven"],
+      "answer": "vivimos",
+      "explanation": "nosotros → Endung -imos bei Verben auf -ir."
+    }
+  ]
+}
+```
+
+- **Lückentext** (`"type": "gap"`): Die fehlenden Wörter stehen in geschweiften Klammern im Satz. Mehrere Lücken sind möglich. In der App zeigt Berühren die Lösung und die Erklärung, Loslassen verbirgt sie, ein Doppeltipp hält sie fest. Die Bewertung erfolgt per Wischen.
+- **Auswahlfrage** (`"type": "choice"`): mindestens zwei `options`. `answer` muss genau einer Option entsprechen. Die Optionen erscheinen in der Reihenfolge der Datei als A, B, C … Nach dem Antippen zeigt die App sofort, ob die Antwort richtig war.
+- `explanation` ist optional und wird nach dem Aufdecken bzw. Beantworten angezeigt.
+- Eine Übung gilt nach **einmal richtig** als gelöst. Der Übungsfortschritt ist vom Vokabelfortschritt getrennt und lässt sich separat zurücksetzen.
+- Fehlerhafte Übungen werden übersprungen und als „Übung N“ gemeldet; die übrigen Inhalte werden trotzdem importiert. Beim erneuten Import bleibt der Fortschritt einer Übung erhalten, solange Satz bzw. Frage und richtige Antwort gleich bleiben. Eine geänderte Erklärung oder ausgetauschte falsche Antworten setzen ihn nicht zurück.
+- Übungen gibt es nur im JSON-Format, nicht im CSV-Import.
 
 ### CSV
 

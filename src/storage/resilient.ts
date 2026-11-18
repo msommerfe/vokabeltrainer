@@ -31,5 +31,13 @@ export function createResilientStore(
     putProgressBatch: (records) =>
       guard(() => inner.putProgressBatch(records), undefined, WRITE_HINT),
     clearProgress: (listId) => guard(() => inner.clearProgress(listId), undefined, WRITE_HINT),
+    listExerciseProgress: (listId) =>
+      guard(() => inner.listExerciseProgress(listId), [], READ_HINT),
+    saveExerciseProgress: (record) =>
+      guard(() => inner.saveExerciseProgress(record), undefined, WRITE_HINT),
+    putExerciseProgressBatch: (records) =>
+      guard(() => inner.putExerciseProgressBatch(records), undefined, WRITE_HINT),
+    clearExerciseProgress: (listId) =>
+      guard(() => inner.clearExerciseProgress(listId), undefined, WRITE_HINT),
   };
 }

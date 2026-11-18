@@ -223,5 +223,27 @@
       { "sentenceA": "¡Hola! ¿Cómo estás?", "sentenceB": "Hallo! Wie geht es dir?" } ] },
     { "wordA": "adiós", "wordB": "tschüss", "examples": [
       { "sentenceA": "Adiós, hasta luego.", "sentenceB": "Tschüss, bis später." } ] }
+  ],
+  "exercises": [
+    { "type": "gap", "sentence": "Yo {soy} de Alemania.", "explanation": "Herkunft wird mit ser ausgedrückt: yo soy." },
+    { "type": "gap", "sentence": "¿Dónde {está} la casa?", "explanation": "Der Ort steht mit estar: la casa está." },
+    { "type": "gap", "sentence": "Nosotros {tenemos} dos hijos.", "explanation": "tener im Präsens: nosotros tenemos." },
+    { "type": "gap", "sentence": "Mañana {voy} a Madrid.", "explanation": "ir ist unregelmäßig: yo voy." },
+    { "type": "gap", "sentence": "¿{Puedes} hablar más despacio?", "explanation": "poder ändert den Stamm o → ue: tú puedes." },
+    { "type": "gap", "sentence": "Ellos {quieren} agua.", "explanation": "querer ändert den Stamm e → ie: ellos quieren." },
+    { "type": "gap", "sentence": "Ella {habla} muy bien español.", "explanation": "Verben auf -ar enden in der 3. Person Singular auf -a." },
+    { "type": "gap", "sentence": "Vosotros {coméis} mucho.", "explanation": "Verben auf -er enden bei vosotros auf -éis." },
+    { "type": "gap", "sentence": "Hoy {hace} buen tiempo.", "explanation": "Beim Wetter steht hacer: hace buen tiempo." },
+    { "type": "gap", "sentence": "{Hola}, ¿{cómo} estás?", "explanation": "Begrüßung mit hola; nach dem Befinden fragt man mit cómo." },
+    { "type": "choice", "question": "Mi madre ___ médica.", "options": ["es", "está", "hay"], "answer": "es", "explanation": "Berufe werden mit ser angegeben." },
+    { "type": "choice", "question": "El café ___ frío.", "options": ["es", "está", "son"], "answer": "está", "explanation": "Ein vorübergehender Zustand steht mit estar." },
+    { "type": "choice", "question": "¿___ años tienes?", "options": ["Cuántos", "Cuántas", "Qué"], "answer": "Cuántos", "explanation": "año ist maskulin, deshalb cuántos." },
+    { "type": "choice", "question": "___ agua está fría.", "options": ["El", "La", "Los"], "answer": "El", "explanation": "agua ist feminin, steht aber wegen des betonten a am Anfang mit el." },
+    { "type": "choice", "question": "Yo ___ 20 años.", "options": ["soy", "tengo", "estoy"], "answer": "tengo", "explanation": "Das Alter wird mit tener angegeben." },
+    { "type": "choice", "question": "Wie heißt „heute“ auf Spanisch?", "options": ["hoy", "ayer", "mañana"], "answer": "hoy", "explanation": "ayer = gestern, mañana = morgen." },
+    { "type": "choice", "question": "Ellos ___ en Berlín.", "options": ["vive", "viven", "vivimos"], "answer": "viven", "explanation": "Bei ellos enden Verben auf -ir auf -en." },
+    { "type": "choice", "question": "Was bedeutet „siempre“?", "options": ["immer", "nie", "manchmal"], "answer": "immer", "explanation": "siempre = immer, nunca = nie." },
+    { "type": "choice", "question": "La casa es ___.", "options": ["pequeño", "pequeña", "pequeños"], "answer": "pequeña", "explanation": "Das Adjektiv richtet sich nach dem Nomen: la casa → pequeña." },
+    { "type": "choice", "question": "Voy ___ casa de mi amigo.", "options": ["a", "en", "con"], "answer": "a", "explanation": "Die Richtung nach ir steht mit a." }
   ]
 }

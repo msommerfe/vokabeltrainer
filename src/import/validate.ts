@@ -1,7 +1,9 @@
-import { deriveEntryKey } from '../domain/entryKey';
+import { deriveChoiceKey, deriveEntryKey, deriveGapKey } from '../domain/entryKey';
 import {
   DEFAULT_LANGUAGE_A,
   DEFAULT_LANGUAGE_B,
+  type Exercise,
+  type GapPart,
   type VocabEntry,
   type VocabExample,
   type VocabList,
@@ -12,6 +14,8 @@ export interface ImportIssue {
   /** 1-basierte Position: Zeilennummer bei CSV, Eintragsnummer bei JSON. */
   position: number;
   reason: string;
+  /** Gesetzt, wenn sich die Position auf den Übungsblock bezieht. */
+  scope?: 'exercise';
 }
 
 /** Fehler, der zur vollständigen Ablehnung der Datei führt. */
@@ -39,6 +43,17 @@ export interface RawList {
   languageA?: unknown;
   languageB?: unknown;
   entries: RawEntry[];
+  exercises?: RawExercise[];
+}
+
+export interface RawExercise {
+  position: number;
+  type: unknown;
+  sentence: unknown;
+  question: unknown;
+  options: unknown;
+  answer: unknown;
+  explanation: unknown;
 }
 
 export interface ImportOutcome {
@@ -118,6 +133,146 @@ export function validateEntries(raw: RawEntry[]): ValidationResult {
 }
 
 /**
+ * Zerlegt einen Satz mit `{…}`-markierten Lücken in Text- und Lückenstücke.
+ * Liefert bei ungültiger Markierung den Grund als Text.
+ */
+export function parseGapSentence(sentence: string): GapPart[] | string {
+  const parts: GapPart[] = [];
+  let buffer = '';
+  let inGap = false;
+
+  for (const char of sentence) {
+    if (char === '{') {
+      if (inGap) {
+        return 'Lücken dürfen nicht verschachtelt sein';
+      }
+      if (buffer.length > 0) {
+        parts.push({ kind: 'text', text: buffer });
+      }
+      buffer = '';
+      inGap = true;
+    } else if (char === '}') {
+      if (!inGap) {
+        return 'Schließende Klammer ohne öffnende';
+      }
+      const word = buffer.trim();
+      if (word.length === 0) {
+        return 'Leere Lücke';
+      }
+      parts.push({ kind: 'gap', text: word });
+      buffer = '';
+      inGap = false;
+    } else {
+      buffer += char;
+    }
+  }
+
+  if (inGap) {
+    return 'Lücke ist nicht geschlossen';
+  }
+  if (buffer.length > 0) {
+    parts.push({ kind: 'text', text: buffer });
+  }
+  if (!parts.some((part) => part.kind === 'gap')) {
+    return 'Keine Lücke markiert';
+  }
+  return parts;
+}
+
+function withExplanation<T extends object>(exercise: T, raw: unknown): T & { explanation?: string } {
+  const explanation = asText(raw);
+  return explanation.length > 0 ? { ...exercise, explanation } : exercise;
+}
+
+function validateExercise(raw: RawExercise): Exercise | string {
+  if (raw.type === 'gap') {
+    const sentence = asText(raw.sentence);
+    if (sentence.length === 0) {
+      return 'Satz fehlt';
+    }
+    const parts = parseGapSentence(sentence);
+    if (typeof parts === 'string') {
+      return parts;
+    }
+    return withExplanation({ kind: 'gap' as const, key: deriveGapKey(parts), parts }, raw.explanation);
+  }
+
+  if (raw.type === 'choice') {
+    const question = asText(raw.question);
+    if (question.length === 0) {
+      return 'Frage fehlt';
+    }
+    if (!Array.isArray(raw.options)) {
+      return 'Antwortmöglichkeiten fehlen';
+    }
+    const options = raw.options.map(asText);
+    if (options.length < 2) {
+      return 'Weniger als zwei Antwortmöglichkeiten';
+    }
+    if (options.some((option) => option.length === 0)) {
+      return 'Leere Antwortmöglichkeit';
+    }
+    if (new Set(options.map((option) => option.toLocaleLowerCase('de'))).size !== options.length) {
+      return 'Doppelte Antwortmöglichkeit';
+    }
+    const answer = asText(raw.answer);
+    const answerIndex = options.findIndex(
+      (option) => option.toLocaleLowerCase('de') === answer.toLocaleLowerCase('de'),
+    );
+    if (answer.length === 0 || answerIndex < 0) {
+      return 'Richtige Antwort ist keine der Antwortmöglichkeiten';
+    }
+    return withExplanation(
+      {
+        kind: 'choice' as const,
+        key: deriveChoiceKey(question, answer),
+        question,
+        options,
+        answerIndex,
+      },
+      raw.explanation,
+    );
+  }
+
+  return typeof raw.type === 'string' && raw.type.length > 0
+    ? `Unbekannter Übungstyp "${raw.type}"`
+    : 'Übungstyp fehlt';
+}
+
+export interface ExerciseValidationResult {
+  exercises: Exercise[];
+  issues: ImportIssue[];
+}
+
+/** Prüft jede Übung einzeln; fehlerhafte werden mit Position gemeldet, nicht importiert. */
+export function validateExercises(raw: readonly RawExercise[]): ExerciseValidationResult {
+  const exercises: Exercise[] = [];
+  const issues: ImportIssue[] = [];
+  const seenKeys = new Map<string, number>();
+
+  for (const candidate of raw) {
+    const result = validateExercise(candidate);
+    if (typeof result === 'string') {
+      issues.push({ position: candidate.position, reason: result, scope: 'exercise' });
+      continue;
+    }
+    const firstSeenAt = seenKeys.get(result.key);
+    if (firstSeenAt !== undefined) {
+      issues.push({
+        position: candidate.position,
+        reason: `Doppelte Übung, bereits an Position ${firstSeenAt}`,
+        scope: 'exercise',
+      });
+      continue;
+    }
+    seenKeys.set(result.key, candidate.position);
+    exercises.push(result);
+  }
+
+  return { exercises, issues };
+}
+
+/**
  * Baut aus einer validierten Rohliste eine Vokabelliste.
  * Wirft `ImportError`, wenn keine einzige Zeile verwertbar ist.
  */
@@ -128,6 +283,8 @@ export function buildList(raw: RawList, fallbackName: string): ImportOutcome {
     throw new ImportError('Die Datei enthält keinen einzigen gültigen Eintrag.');
   }
 
+  const checked = validateExercises(raw.exercises ?? []);
+
   return {
     list: {
       id: crypto.randomUUID(),
@@ -135,8 +292,9 @@ export function buildList(raw: RawList, fallbackName: string): ImportOutcome {
       languageA: textOr(raw.languageA, DEFAULT_LANGUAGE_A),
       languageB: textOr(raw.languageB, DEFAULT_LANGUAGE_B),
       entries,
+      exercises: checked.exercises,
       importedAt: Date.now(),
     },
-    issues,
+    issues: [...issues, ...checked.issues],
   };
 }

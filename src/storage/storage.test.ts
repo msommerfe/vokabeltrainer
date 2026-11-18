@@ -12,6 +12,7 @@ function makeList(id: string): VocabList {
     languageA: 'Deutsch',
     languageB: 'Englisch',
     entries: [{ key: 'haus|house', wordA: 'Haus', wordB: 'house', examples: [] }],
+    exercises: [],
     importedAt: 1,
   };
 }
@@ -91,6 +92,10 @@ describe('createResilientStore', () => {
     saveProgress: () => Promise.reject(new Error('kaputt')),
     putProgressBatch: () => Promise.reject(new Error('kaputt')),
     clearProgress: () => Promise.reject(new Error('kaputt')),
+    listExerciseProgress: () => Promise.reject(new Error('kaputt')),
+    saveExerciseProgress: () => Promise.reject(new Error('kaputt')),
+    putExerciseProgressBatch: () => Promise.reject(new Error('kaputt')),
+    clearExerciseProgress: () => Promise.reject(new Error('kaputt')),
   };
 
   it('meldet einen Hinweis statt den Aufruf scheitern zu lassen', async () => {

@@ -1,31 +1,31 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { progressKey } from '../domain/entryKey';
-import {
-  applyRating,
-  indexProgress,
-  pruneProgressToEntries,
-  rebaseProgressToList,
-} from '../domain/progress';
-import type { Direction, ProgressRecord, Rating, VocabList } from '../domain/types';
+import { exerciseProgressKey, progressKey } from '../domain/entryKey';
+import { applyExerciseResult, indexExerciseProgress } from '../domain/exercises';
+import { applyRating, indexProgress } from '../domain/progress';
+import type {
+  Direction,
+  ExerciseProgressRecord,
+  ProgressRecord,
+  Rating,
+  VocabList,
+} from '../domain/types';
 import type { ImportIssue, ImportOutcome } from '../import/validate';
 import { createIndexedDbStore } from '../storage/indexeddb';
 import { createMemoryStore } from '../storage/memory';
-import { removeListCompletely } from '../storage/operations';
+import { removeListCompletely, replaceList } from '../storage/operations';
 import { createResilientStore } from '../storage/resilient';
 import type { VocabStore } from '../storage/types';
 import { importFileContent } from './importFile';
+import { syncSamples } from './samples';
 
-const SEEDED_FLAG = 'vokabeltrainer.samples-seeded';
-
-const SAMPLE_FILES: readonly { file: string; name: string }[] = [
-  { file: 'spanisch-grundwortschatz.json', name: 'Spanisch Grundwortschatz' },
-  { file: 'spanisch-alltagswoerter.json', name: 'Spanisch Alltagswörter' },
-  { file: 'spanisch-aufbauwortschatz.json', name: 'Spanisch Aufbauwortschatz' },
-];
+const VERSION_KEY = 'vokabeltrainer.samples-version';
+/** Kennzeichen der ersten App-Version, die nur "eingespielt ja/nein" kannte. */
+const LEGACY_SEEDED_FLAG = 'vokabeltrainer.samples-seeded';
 
 export interface ImportSummary {
   listName: string;
   imported: number;
+  exercises: number;
   issues: ImportIssue[];
 }
 
@@ -33,10 +33,15 @@ export interface RateOutcome {
   newlyLearned: boolean;
 }
 
+export interface ExerciseOutcome {
+  newlySolved: boolean;
+}
+
 export interface Library {
   ready: boolean;
   lists: VocabList[];
   progress: ReadonlyMap<string, ProgressRecord>;
+  exerciseProgress: ReadonlyMap<string, ExerciseProgressRecord>;
   notice: string | undefined;
   dismissNotice: () => void;
   importOutcome: (outcome: ImportOutcome, replaceListId?: string) => Promise<ImportSummary>;
@@ -47,23 +52,33 @@ export interface Library {
     direction: Direction,
     rating: Rating,
   ) => Promise<RateOutcome>;
+  answerExercise: (
+    listId: string,
+    exerciseKey: string,
+    correct: boolean,
+  ) => Promise<ExerciseOutcome>;
   resetList: (listId: string) => Promise<void>;
+  resetExercises: (listId: string) => Promise<void>;
   deleteList: (listId: string) => Promise<void>;
 }
 
-function hasPersistentFlag(): boolean {
+function readSamplesVersion(): number | undefined {
   try {
-    return localStorage.getItem(SEEDED_FLAG) === '1';
+    const stored = Number(localStorage.getItem(VERSION_KEY));
+    if (Number.isInteger(stored) && stored > 0) {
+      return stored;
+    }
+    return localStorage.getItem(LEGACY_SEEDED_FLAG) === '1' ? 1 : undefined;
   } catch {
-    return false;
+    return undefined;
   }
 }
 
-function setPersistentFlag(): void {
+function writeSamplesVersion(version: number): void {
   try {
-    localStorage.setItem(SEEDED_FLAG, '1');
+    localStorage.setItem(VERSION_KEY, String(version));
   } catch {
-    // Ohne localStorage werden die Beispiellisten erneut angeboten; das ist unkritisch.
+    // Ohne localStorage wird der Abgleich beim nächsten Start wiederholt; das ist unkritisch.
   }
 }
 
@@ -71,25 +86,22 @@ function setPersistentFlag(): void {
 let seeding: Promise<void> | undefined;
 
 function ensureSamples(store: VocabStore): Promise<void> {
-  seeding ??= (async () => {
-    if (hasPersistentFlag() || (await store.listLists()).length > 0) {
-      return;
-    }
-    // Flag vor dem Laden setzen: Ein Neuladen mitten im Import darf keine Duplikate erzeugen.
-    setPersistentFlag();
-
-    for (const sample of SAMPLE_FILES) {
+  seeding ??= syncSamples(store, {
+    readVersion: readSamplesVersion,
+    writeVersion: writeSamplesVersion,
+    loadSample: async (sample) => {
       try {
         const response = await fetch(`${import.meta.env.BASE_URL}samples/${sample.file}`);
         if (!response.ok) {
-          continue;
+          return undefined;
         }
-        await store.saveList(importFileContent(sample.file, await response.text(), sample.name).list);
+        return importFileContent(sample.file, await response.text(), sample.name).list;
       } catch {
         // Ohne Beispielliste bleibt die App nutzbar; eigene Listen sind weiterhin importierbar.
+        return undefined;
       }
-    }
-  })();
+    },
+  });
 
   return seeding;
 }
@@ -98,6 +110,9 @@ export function useLibrary(): Library {
   const [ready, setReady] = useState(false);
   const [lists, setLists] = useState<VocabList[]>([]);
   const [progress, setProgress] = useState<ReadonlyMap<string, ProgressRecord>>(new Map());
+  const [exerciseProgress, setExerciseProgress] = useState<
+    ReadonlyMap<string, ExerciseProgressRecord>
+  >(new Map());
   const [notice, setNotice] = useState<string | undefined>(undefined);
 
   const noticeRef = useRef(setNotice);
@@ -106,6 +121,8 @@ export function useLibrary(): Library {
   // Bewertungen können schneller eintreffen als React neu rendert; die Ref hält den aktuellen Stand.
   const progressRef = useRef(progress);
   progressRef.current = progress;
+  const exerciseProgressRef = useRef(exerciseProgress);
+  exerciseProgressRef.current = exerciseProgress;
 
   const store: VocabStore = useMemo(() => {
     const inner = typeof indexedDB === 'undefined' ? createMemoryStore() : createIndexedDbStore();
@@ -115,8 +132,12 @@ export function useLibrary(): Library {
   const refresh = useCallback(async () => {
     const loaded = await store.listLists();
     const records = await Promise.all(loaded.map((list) => store.listProgress(list.id)));
+    const exerciseRecords = await Promise.all(
+      loaded.map((list) => store.listExerciseProgress(list.id)),
+    );
     setLists(loaded);
     setProgress(indexProgress(records.flat()));
+    setExerciseProgress(indexExerciseProgress(exerciseRecords.flat()));
   }, [store]);
 
   useEffect(() => {
@@ -142,15 +163,7 @@ export function useLibrary(): Library {
   const importOutcome = useCallback(
     async (outcome: ImportOutcome, replaceListId?: string): Promise<ImportSummary> => {
       if (replaceListId !== undefined) {
-        // Fortschritt unveränderter Wörter übernehmen, neue Wörter starten bei 0.
-        const previous = await store.listProgress(replaceListId);
-        const kept = rebaseProgressToList(
-          pruneProgressToEntries(previous, outcome.list.entries),
-          outcome.list.id,
-        );
-        await removeListCompletely(store, replaceListId);
-        await store.saveList(outcome.list);
-        await store.putProgressBatch(kept);
+        await replaceList(store, replaceListId, outcome.list);
       } else {
         await store.saveList(outcome.list);
       }
@@ -159,6 +172,7 @@ export function useLibrary(): Library {
       return {
         listName: outcome.list.name,
         imported: outcome.list.entries.length,
+        exercises: outcome.list.exercises.length,
         issues: outcome.issues,
       };
     },
@@ -193,9 +207,34 @@ export function useLibrary(): Library {
     [store],
   );
 
+  const answerExercise = useCallback(
+    async (listId: string, exerciseKey: string, correct: boolean): Promise<ExerciseOutcome> => {
+      const key = exerciseProgressKey(listId, exerciseKey);
+      const previous = exerciseProgressRef.current.get(key);
+      const next = applyExerciseResult(previous, correct, { listId, exerciseKey, now: Date.now() });
+
+      const updated = new Map(exerciseProgressRef.current).set(key, next);
+      exerciseProgressRef.current = updated;
+      setExerciseProgress(updated);
+
+      await store.saveExerciseProgress(next);
+
+      return { newlySolved: next.solved && previous?.solved !== true };
+    },
+    [store],
+  );
+
   const resetList = useCallback(
     async (listId: string) => {
       await store.clearProgress(listId);
+      await refresh();
+    },
+    [store, refresh],
+  );
+
+  const resetExercises = useCallback(
+    async (listId: string) => {
+      await store.clearExerciseProgress(listId);
       await refresh();
     },
     [store, refresh],
@@ -217,12 +256,15 @@ export function useLibrary(): Library {
     ready,
     lists,
     progress,
+    exerciseProgress,
     notice,
     dismissNotice,
     importOutcome,
     readFile,
     rate,
+    answerExercise,
     resetList,
+    resetExercises,
     deleteList,
   };
 }

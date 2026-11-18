@@ -10,6 +10,7 @@ const list: VocabList = {
   languageA: 'Deutsch',
   languageB: 'Englisch',
   importedAt: 0,
+  exercises: [],
   entries: [
     { key: 'haus|house', wordA: 'das Haus', wordB: 'the house', examples: [] },
     { key: 'hund|dog', wordA: 'der Hund', wordB: 'the dog', examples: [] },

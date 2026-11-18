@@ -370,6 +370,106 @@ progress::-moz-progress-bar {
   color: var(--bad);
 }
 
+/* Übungen */
+
+.card--static {
+  cursor: default;
+  justify-content: flex-start;
+  text-align: left;
+  touch-action: auto;
+}
+
+.exercise-sentence,
+.exercise-question {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.gap {
+  display: inline-block;
+  min-width: 3.5em;
+  margin: 0 0.15em;
+  border-bottom: 2px solid var(--text-muted);
+}
+
+.gap--filled {
+  min-width: 0;
+  padding: 0 0.15em;
+  background: none;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.exercise-explanation {
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--surface-raised);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.choice-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.choice {
+  width: 100%;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface-raised);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 1rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.choice:disabled {
+  cursor: default;
+}
+
+.choice-letter {
+  flex: none;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.choice--correct {
+  border-color: var(--good);
+}
+
+.choice--wrong {
+  border-color: var(--bad);
+}
+
+.exercise-verdict {
+  margin: 0;
+  font-weight: 700;
+}
+
+.exercise-verdict--good {
+  color: var(--good);
+}
+
+.exercise-verdict--bad {
+  color: var(--bad);
+}
+
 /* Zusammenfassung */
 
 .tally {

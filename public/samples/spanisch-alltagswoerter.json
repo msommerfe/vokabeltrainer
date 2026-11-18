@@ -224,5 +224,27 @@
       { "sentenceA": "Tengo una pregunta.", "sentenceB": "Ich habe eine Frage." } ] },
     { "wordA": "la respuesta", "wordB": "die Antwort", "examples": [
       { "sentenceA": "No sé la respuesta.", "sentenceB": "Ich weiß die Antwort nicht." } ] }
+  ],
+  "exercises": [
+    { "type": "gap", "sentence": "Quiero un {café} con leche.", "explanation": "café con leche = Milchkaffee." },
+    { "type": "gap", "sentence": "¿Cuánto {cuesta} el billete?", "explanation": "costar ändert den Stamm o → ue: el billete cuesta." },
+    { "type": "gap", "sentence": "La tienda {abre} a las nueve.", "explanation": "abrir in der 3. Person Singular: abre." },
+    { "type": "gap", "sentence": "El tren {llega} tarde.", "explanation": "llegar in der 3. Person Singular: llega." },
+    { "type": "gap", "sentence": "Me {gusta} el queso.", "explanation": "gustar steht im Singular, weil el queso Singular ist." },
+    { "type": "gap", "sentence": "Me {gustan} las manzanas.", "explanation": "Bei einem Plural wie las manzanas steht gustan." },
+    { "type": "gap", "sentence": "La farmacia está a la {derecha}.", "explanation": "a la derecha = rechts, a la izquierda = links." },
+    { "type": "gap", "sentence": "Nosotros {pagamos} la cuenta.", "explanation": "pagar bei nosotros: pagamos." },
+    { "type": "gap", "sentence": "Los domingos {duermo} mucho.", "explanation": "dormir ändert den Stamm o → ue: yo duermo." },
+    { "type": "gap", "sentence": "La {cena} está en la {mesa}.", "explanation": "la cena = das Abendessen, la mesa = der Tisch." },
+    { "type": "choice", "question": "Was ist das Gegenteil von „caro“?", "options": ["barato", "rápido", "lleno"], "answer": "barato", "explanation": "caro = teuer, barato = billig." },
+    { "type": "choice", "question": "La ventana está ___.", "options": ["abierto", "abierta", "abiertos"], "answer": "abierta", "explanation": "la ventana ist feminin Singular." },
+    { "type": "choice", "question": "¿___ está la estación?", "options": ["Dónde", "Cuándo", "Cuánto"], "answer": "Dónde", "explanation": "Nach dem Ort fragt man mit dónde." },
+    { "type": "choice", "question": "Yo ___ al mercado el sábado.", "options": ["voy", "va", "vamos"], "answer": "voy", "explanation": "ir bei yo: voy. a + el wird zu al." },
+    { "type": "choice", "question": "Was bedeutet „la cuenta“ im Restaurant?", "options": ["die Rechnung", "die Speisekarte", "das Getränk"], "answer": "die Rechnung", "explanation": "La cuenta, por favor. = Die Rechnung, bitte." },
+    { "type": "choice", "question": "Los zapatos están ___.", "options": ["sucio", "sucios", "sucias"], "answer": "sucios", "explanation": "los zapatos ist maskulin Plural." },
+    { "type": "choice", "question": "Yo ___ un libro.", "options": ["leo", "lee", "leen"], "answer": "leo", "explanation": "leer bei yo: leo." },
+    { "type": "choice", "question": "Me ___ viajar.", "options": ["gusta", "gustan", "gusto"], "answer": "gusta", "explanation": "Mit einem Infinitiv steht gustar im Singular." },
+    { "type": "choice", "question": "El hotel está ___ de la playa.", "options": ["cerca", "cerrado", "caliente"], "answer": "cerca", "explanation": "cerca de = in der Nähe von." },
+    { "type": "choice", "question": "¿A qué hora ___ el autobús?", "options": ["sale", "salgo", "salen"], "answer": "sale", "explanation": "salir bei el autobús: sale. yo salgo ist unregelmäßig." }
   ]
 }

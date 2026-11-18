@@ -48,6 +48,16 @@ describe.each(SAMPLES)('mitgelieferte Liste $name', ({ file, name }) => {
     expect(new Set(list.entries.map((entry) => entry.key)).size).toBe(list.entries.length);
   });
 
+  it('enthält je mindestens 10 Lückentexte und Auswahlfragen, alle mit Erklärung', () => {
+    const { list } = loadSample(file);
+    const gaps = list.exercises.filter((exercise) => exercise.kind === 'gap');
+    const choices = list.exercises.filter((exercise) => exercise.kind === 'choice');
+
+    expect(gaps.length).toBeGreaterThanOrEqual(10);
+    expect(choices.length).toBeGreaterThanOrEqual(10);
+    expect(list.exercises.filter((exercise) => exercise.explanation === undefined)).toEqual([]);
+  });
+
   it('zeigt bei Verben die sechs Präsensformen in beiden Sprachen', () => {
     const { list } = loadSample(file);
     const verbs = list.entries.filter((entry) =>

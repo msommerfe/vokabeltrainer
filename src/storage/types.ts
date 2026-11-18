@@ -1,4 +1,4 @@
-import type { ProgressRecord, VocabList } from '../domain/types';
+import type { ExerciseProgressRecord, ProgressRecord, VocabList } from '../domain/types';
 
 /** Persistenz für Vokabellisten und Lernfortschritt. */
 export interface VocabStore {
@@ -9,6 +9,10 @@ export interface VocabStore {
   saveProgress(record: ProgressRecord): Promise<void>;
   putProgressBatch(records: ProgressRecord[]): Promise<void>;
   clearProgress(listId: string): Promise<void>;
+  listExerciseProgress(listId: string): Promise<ExerciseProgressRecord[]>;
+  saveExerciseProgress(record: ExerciseProgressRecord): Promise<void>;
+  putExerciseProgressBatch(records: ExerciseProgressRecord[]): Promise<void>;
+  clearExerciseProgress(listId: string): Promise<void>;
 }
 
 /** Signalisiert, dass der Gerätespeicher nicht verfügbar oder voll ist. */

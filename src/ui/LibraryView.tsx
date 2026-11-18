@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { summarizeExercises, type ExerciseProgressIndex } from '../domain/exercises';
 import { summarizeProgress } from '../domain/progress';
 import { DIRECTIONS, directionLabels } from '../domain/types';
 import type { Direction, ProgressRecord, VocabList } from '../domain/types';
@@ -6,22 +7,44 @@ import type { Direction, ProgressRecord, VocabList } from '../domain/types';
 interface LibraryViewProps {
   lists: VocabList[];
   progress: ReadonlyMap<string, ProgressRecord>;
+  exerciseProgress: ExerciseProgressIndex;
   onStart: (listId: string, direction: Direction) => void;
+  onStartExercises: (listId: string) => void;
   onImport: () => void;
   onReset: (listId: string) => void;
+  onResetExercises: (listId: string) => void;
   onDelete: (listId: string) => void;
 }
 
 type PendingAction =
   | { kind: 'reset'; list: VocabList }
+  | { kind: 'reset-exercises'; list: VocabList }
   | { kind: 'delete'; list: VocabList };
+
+const CONFIRM_TEXT: Record<PendingAction['kind'], { question: (name: string) => string; action: string }> = {
+  reset: {
+    question: (name) => `Vokabelfortschritt von „${name}“ in beiden Richtungen zurücksetzen?`,
+    action: 'Zurücksetzen',
+  },
+  'reset-exercises': {
+    question: (name) => `Übungsfortschritt von „${name}“ zurücksetzen?`,
+    action: 'Zurücksetzen',
+  },
+  delete: {
+    question: (name) => `Liste „${name}“ und den zugehörigen Fortschritt löschen?`,
+    action: 'Löschen',
+  },
+};
 
 export function LibraryView({
   lists,
   progress,
+  exerciseProgress,
   onStart,
+  onStartExercises,
   onImport,
   onReset,
+  onResetExercises,
   onDelete,
 }: LibraryViewProps) {
   const [pending, setPending] = useState<PendingAction | undefined>(undefined);
@@ -32,6 +55,8 @@ export function LibraryView({
     }
     if (pending.kind === 'reset') {
       onReset(pending.list.id);
+    } else if (pending.kind === 'reset-exercises') {
+      onResetExercises(pending.list.id);
     } else {
       onDelete(pending.list.id);
     }
@@ -86,6 +111,14 @@ export function LibraryView({
                   </button>
                 );
               })}
+
+              {list.exercises.length > 0 ? (
+                <ExerciseTile
+                  list={list}
+                  exerciseProgress={exerciseProgress}
+                  onStart={() => onStartExercises(list.id)}
+                />
+              ) : null}
             </div>
 
             <div className="button-row">
@@ -94,8 +127,17 @@ export function LibraryView({
                 className="link-button"
                 onClick={() => setPending({ kind: 'reset', list })}
               >
-                Fortschritt zurücksetzen
+                Vokabeln zurücksetzen
               </button>
+              {list.exercises.length > 0 ? (
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => setPending({ kind: 'reset-exercises', list })}
+                >
+                  Übungen zurücksetzen
+                </button>
+              ) : null}
               <button
                 type="button"
                 className="link-button link-button--danger"
@@ -111,22 +153,42 @@ export function LibraryView({
       {pending !== undefined ? (
         <div className="dialog-backdrop" role="dialog" aria-modal="true">
           <div className="dialog">
-            <p>
-              {pending.kind === 'reset'
-                ? `Fortschritt von „${pending.list.name}“ in beiden Richtungen zurücksetzen?`
-                : `Liste „${pending.list.name}“ und den zugehörigen Fortschritt löschen?`}
-            </p>
+            <p>{CONFIRM_TEXT[pending.kind].question(pending.list.name)}</p>
             <div className="button-row">
               <button type="button" className="button" onClick={() => setPending(undefined)}>
                 Abbrechen
               </button>
               <button type="button" className="button button--danger" onClick={confirm}>
-                {pending.kind === 'reset' ? 'Zurücksetzen' : 'Löschen'}
+                {CONFIRM_TEXT[pending.kind].action}
               </button>
             </div>
           </div>
         </div>
       ) : null}
     </section>
+  );
+}
+
+function ExerciseTile({
+  list,
+  exerciseProgress,
+  onStart,
+}: {
+  list: VocabList;
+  exerciseProgress: ExerciseProgressIndex;
+  onStart: () => void;
+}) {
+  const summary = summarizeExercises(list.exercises, exerciseProgress, list.id);
+  const done = summary.open === 0;
+
+  return (
+    <button type="button" className="direction-button" onClick={onStart}>
+      <span className="direction-label">Übungen</span>
+      <span className="direction-stats">
+        {summary.solved} gelöst · {summary.open} offen
+        {done ? ' · abgeschlossen' : ''}
+      </span>
+      <progress value={summary.solved} max={summary.total} />
+    </button>
   );
 }

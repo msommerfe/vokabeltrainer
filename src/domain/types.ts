@@ -18,6 +18,29 @@ export type Direction = 'a-to-b' | 'b-to-a';
 
 export const DIRECTIONS: readonly Direction[] = ['a-to-b', 'b-to-a'];
 
+/** Ein Stück eines Lückentexts: sichtbarer Text oder zu erratendes Wort. */
+export type GapPart = { kind: 'text'; text: string } | { kind: 'gap'; text: string };
+
+/** Satz mit einem oder mehreren fehlenden Wörtern. */
+export interface GapExercise {
+  kind: 'gap';
+  key: string;
+  parts: GapPart[];
+  explanation?: string;
+}
+
+/** Frage mit mehreren Antwortmöglichkeiten, von denen genau eine richtig ist. */
+export interface ChoiceExercise {
+  kind: 'choice';
+  key: string;
+  question: string;
+  options: string[];
+  answerIndex: number;
+  explanation?: string;
+}
+
+export type Exercise = GapExercise | ChoiceExercise;
+
 /** Eine benannte Vokabelliste mit Bezeichnungen für beide Sprachen. */
 export interface VocabList {
   id: string;
@@ -25,7 +48,10 @@ export interface VocabList {
   languageA: string;
   languageB: string;
   entries: VocabEntry[];
+  exercises: Exercise[];
   importedAt: number;
+  /** Dateiname der mitgelieferten Liste, aus der diese Liste stammt. */
+  sampleFile?: string;
 }
 
 export const DEFAULT_LANGUAGE_A = 'Sprache A';
@@ -44,6 +70,14 @@ export interface ProgressRecord {
 
 /** Bewertung einer Karte durch den Nutzer. */
 export type Rating = 'known' | 'unknown';
+
+/** Ob eine Übung einer Liste bereits einmal richtig gelöst wurde. */
+export interface ExerciseProgressRecord {
+  listId: string;
+  exerciseKey: string;
+  solved: boolean;
+  updatedAt: number;
+}
 
 /** Anzahl korrekter Antworten in Folge, ab der ein Wort als gelernt gilt. */
 export const LEARNED_THRESHOLD = 3;

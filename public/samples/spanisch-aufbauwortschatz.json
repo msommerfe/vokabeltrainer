@@ -227,5 +227,27 @@
       { "sentenceA": "Está entre los dos.", "sentenceB": "Es ist zwischen den beiden." } ] },
     { "wordA": "según", "wordB": "laut, je nach", "examples": [
       { "sentenceA": "Según el médico, estoy bien.", "sentenceB": "Laut dem Arzt geht es mir gut." } ] }
+  ],
+  "exercises": [
+    { "type": "gap", "sentence": "Me {duele} la cabeza.", "explanation": "doler funktioniert wie gustar: me duele + Singular." },
+    { "type": "gap", "sentence": "Me {duelen} los pies.", "explanation": "Bei einem Plural wie los pies steht duelen." },
+    { "type": "gap", "sentence": "Estoy {cansado} después del trabajo.", "explanation": "Ein Zustand steht mit estar: estoy cansado." },
+    { "type": "gap", "sentence": "La película {empieza} a las ocho.", "explanation": "empezar ändert den Stamm e → ie: empieza." },
+    { "type": "gap", "sentence": "Siempre {olvido} las llaves.", "explanation": "olvidar ist regelmäßig: yo olvido." },
+    { "type": "gap", "sentence": "Hoy hace {sol} y no hay {nubes}.", "explanation": "hace sol = die Sonne scheint; la nube → las nubes." },
+    { "type": "gap", "sentence": "Mi hermano es más {alto} que yo.", "explanation": "Vergleich: más + Adjektiv + que." },
+    { "type": "gap", "sentence": "Esta solución es {mejor} que la otra.", "explanation": "mejor ist der unregelmäßige Komparativ von bueno." },
+    { "type": "gap", "sentence": "{Vuelvo} a casa a las seis.", "explanation": "volver ändert den Stamm o → ue: yo vuelvo." },
+    { "type": "gap", "sentence": "En la {montaña} nieva mucho.", "explanation": "la montaña = der Berg; nieva kommt von nevar." },
+    { "type": "choice", "question": "Mi jefe ___ muy simpático.", "options": ["es", "está", "hay"], "answer": "es", "explanation": "Charaktereigenschaften stehen mit ser." },
+    { "type": "choice", "question": "Hoy mi jefe ___ enfadado.", "options": ["es", "está", "son"], "answer": "está", "explanation": "Eine momentane Stimmung steht mit estar." },
+    { "type": "choice", "question": "Was ist das Gegenteil von „fuerte“?", "options": ["débil", "largo", "libre"], "answer": "débil", "explanation": "fuerte = stark, débil = schwach." },
+    { "type": "choice", "question": "Esta película es ___ que la otra.", "options": ["peor", "malo", "mala"], "answer": "peor", "explanation": "Der Komparativ von malo ist peor." },
+    { "type": "choice", "question": "Was bedeutet „todavía no“?", "options": ["noch nicht", "schon", "nie"], "answer": "noch nicht", "explanation": "todavía no = noch nicht, ya = schon." },
+    { "type": "choice", "question": "No ___ su nombre.", "options": ["recuerdo", "recordo", "recuerda"], "answer": "recuerdo", "explanation": "recordar ändert den Stamm o → ue: yo recuerdo." },
+    { "type": "choice", "question": "___ llueve, vamos al parque.", "options": ["Aunque", "Según", "Entre"], "answer": "Aunque", "explanation": "aunque = obwohl." },
+    { "type": "choice", "question": "El perro está ___ el árbol y la casa.", "options": ["entre", "contra", "según"], "answer": "entre", "explanation": "entre … y … = zwischen … und …" },
+    { "type": "choice", "question": "Ella ___ español a niños.", "options": ["enseña", "aprende", "pregunta"], "answer": "enseña", "explanation": "enseñar = unterrichten, aprender = lernen." },
+    { "type": "choice", "question": "Tienes que ___ entre el rojo y el azul.", "options": ["elegir", "eliges", "elijo"], "answer": "elegir", "explanation": "Nach tener que steht der Infinitiv." }
   ]
 }

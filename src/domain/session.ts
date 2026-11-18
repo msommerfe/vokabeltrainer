@@ -16,11 +16,11 @@ export function openEntries(
  * wiederkommen, bevor alle anderen dran waren, aber nicht direkt hintereinander,
  * solange noch ein anderes Wort offen ist.
  */
-export function drawNext(
-  open: readonly VocabEntry[],
+export function drawNext<T extends { key: string }>(
+  open: readonly T[],
   previousKey?: string,
   random: () => number = Math.random,
-): VocabEntry | undefined {
+): T | undefined {
   const candidates =
     open.length > 1 ? open.filter((entry) => entry.key !== previousKey) : open;
   return candidates[Math.floor(random() * candidates.length)];
