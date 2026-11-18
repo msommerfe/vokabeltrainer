@@ -8,13 +8,13 @@ Beschreibt den Ablauf einer Karteikarten-Lernsitzung: Auswahl der Liste und Abfr
 
 ### Requirement: Sitzung starten
 
-Vor dem Start einer Sitzung MUSS der Nutzer eine Vokabelliste und eine Abfragerichtung wählen. Die Sitzung MUSS nur Wörter enthalten, die in der gewählten Richtung noch nicht als gelernt gelten.
+Vor dem Start einer Sitzung MUSS der Nutzer eine Vokabelliste und eine Abfragerichtung wählen. Die Sitzung MUSS alle Wörter umfassen, die in der gewählten Richtung noch nicht als gelernt gelten, und nur diese.
 
 #### Scenario: Sitzung mit offenen Wörtern
 
 - **WHEN** der Nutzer eine Liste mit 30 noch nicht gelernten Wörtern auswählt und die Sitzung startet
 - **THEN** wird die erste Karte angezeigt
-- **AND** der Fortschritt innerhalb der Sitzung ist sichtbar
+- **AND** die Anzahl der noch offenen Wörter ist sichtbar
 
 #### Scenario: Alle Wörter bereits gelernt
 
@@ -46,27 +46,33 @@ Das System MUSS die Abfrage in beide Richtungen unterstützen: Sprache A → Spr
 
 ### Requirement: Übersetzung aufdecken
 
-Die Übersetzung MUSS verdeckt bleiben, bis der Nutzer die Karte lange drückt oder doppelt antippt. Beim Aufdecken MÜSSEN die Übersetzung und alle hinterlegten Beispiele sichtbar werden.
+Die Übersetzung MUSS sichtbar sein, solange der Nutzer die Karte berührt, und beim Loslassen wieder verborgen werden. Ein Doppeltipp MUSS die Übersetzung dauerhaft aufdecken, bis die nächste Karte erscheint. Beim Aufdecken MÜSSEN die Übersetzung und alle hinterlegten Beispiele sichtbar werden.
 
-#### Scenario: Aufdecken per langem Druck
+#### Scenario: Anzeigen bei Berührung
 
-- **WHEN** der Nutzer die Karte mindestens 500 Millisekunden gedrückt hält
-- **THEN** wird die Übersetzung angezeigt
+- **WHEN** der Nutzer die Karte berührt
+- **THEN** wird die Übersetzung sofort angezeigt, ohne Mindestdauer
 
-#### Scenario: Aufdecken per Doppeltipp
+#### Scenario: Verbergen beim Loslassen
+
+- **WHEN** der Nutzer die Karte loslässt, ohne zuvor doppelt getippt zu haben
+- **THEN** wird die Übersetzung wieder verborgen
+
+#### Scenario: Dauerhaft per Doppeltipp
 
 - **WHEN** der Nutzer die Karte zweimal kurz hintereinander antippt
-- **THEN** wird die Übersetzung angezeigt
+- **THEN** bleibt die Übersetzung nach dem Loslassen sichtbar
+- **AND** sie bleibt sichtbar, bis die nächste Karte erscheint
+
+#### Scenario: Sichtbar beim Wischen
+
+- **WHEN** der Nutzer die Karte berührt und wischt
+- **THEN** bleibt die Übersetzung während der Wischbewegung sichtbar
 
 #### Scenario: Beispiele werden mit angezeigt
 
 - **WHEN** die Übersetzung eines Wortes mit hinterlegten Beispielen aufgedeckt wird
 - **THEN** werden alle Beispiele in beiden Sprachen unter der Übersetzung angezeigt
-
-#### Scenario: Einzelnes Tippen deckt nicht auf
-
-- **WHEN** der Nutzer die Karte nur einmal kurz antippt
-- **THEN** bleibt die Übersetzung verdeckt
 
 ### Requirement: Bewertung per Swipe
 
@@ -90,47 +96,57 @@ Der Nutzer MUSS eine Karte durch Wischen bewerten: Wischen nach rechts bedeutet 
 - **THEN** kehrt die Karte in ihre Ausgangslage zurück
 - **AND** es wird keine Bewertung gespeichert
 
-#### Scenario: Bewertung ohne Aufdecken
+### Requirement: Kartenauswahl während der Sitzung
 
-- **WHEN** der Nutzer eine Karte wischt, ohne die Übersetzung aufgedeckt zu haben
-- **THEN** wird die Bewertung trotzdem gewertet
+Jede nächste Karte MUSS zufällig aus den aktuell offenen Wörtern gezogen werden. Ein Wort DARF erneut vorgelegt werden, bevor alle anderen offenen Wörter einmal abgefragt wurden. Dasselbe Wort SOLL NICHT zweimal direkt hintereinander erscheinen, solange mehr als ein Wort offen ist. Ein Wort, das während der Sitzung als gelernt gilt, MUSS sofort aus der Auswahl entfernt werden.
 
-### Requirement: Umfang eines Durchgangs
-
-Ein Durchgang MUSS auf höchstens 20 Karten begrenzt sein. Enthält die Liste mehr offene Wörter, MUSS das System daraus 20 zufällig auswählen.
-
-#### Scenario: Liste mit mehr als 20 offenen Wörtern
+#### Scenario: Keine Begrenzung der Kartenzahl
 
 - **WHEN** der Nutzer eine Sitzung für eine Liste mit 100 offenen Wörtern startet
-- **THEN** umfasst der Durchgang genau 20 Karten
+- **THEN** kann jedes der 100 Wörter gezogen werden
+- **AND** es gibt keine Obergrenze von 20 Karten
 
-#### Scenario: Liste mit weniger als 20 offenen Wörtern
+#### Scenario: Wiederholung vor vollständigem Durchlauf
 
-- **WHEN** der Nutzer eine Sitzung für eine Liste mit 12 offenen Wörtern startet
-- **THEN** umfasst der Durchgang alle 12 Karten
+- **WHEN** in einer Sitzung mit 100 offenen Wörtern bereits einige Wörter abgefragt wurden
+- **THEN** darf ein bereits abgefragtes Wort erneut erscheinen, auch wenn andere Wörter noch nicht abgefragt wurden
 
-#### Scenario: Auswahl wechselt zwischen Durchgängen
+#### Scenario: Keine direkte Wiederholung
 
-- **WHEN** der Nutzer zwei Durchgänge derselben Liste mit 100 offenen Wörtern startet
-- **THEN** unterscheidet sich die Auswahl der Karten zwischen den Durchgängen
-- **AND** über mehrere Durchgänge hinweg kann jedes offene Wort vorgelegt werden
+- **WHEN** mehr als ein Wort offen ist und eine Karte bewertet wurde
+- **THEN** zeigt die nächste Karte ein anderes Wort
+
+#### Scenario: Nur ein Wort offen
+
+- **WHEN** nur noch ein Wort offen ist
+- **THEN** darf dieses Wort direkt hintereinander erscheinen
+
+#### Scenario: Gelernt während der Sitzung
+
+- **WHEN** ein Wort während der Sitzung zum dritten Mal in Folge als "gewusst" bewertet wird
+- **THEN** erscheint es in dieser Sitzung nicht mehr
 
 ### Requirement: Sitzung abschließen
 
-Eine Sitzung MUSS enden, wenn alle Karten des Durchgangs bewertet wurden. Zum Abschluss MUSS eine Zusammenfassung mit der Anzahl gewusster und nicht gewusster Antworten sowie der in dieser Sitzung neu gelernten Wörter angezeigt werden.
+Eine Sitzung MUSS enden, wenn alle Wörter der gewählten Richtung als gelernt gelten oder der Nutzer sie beendet. Der Nutzer MUSS die Sitzung jederzeit beenden können. Zum Abschluss MUSS eine Zusammenfassung mit der Anzahl gewusster und nicht gewusster Antworten sowie der in dieser Sitzung neu gelernten Wörter angezeigt werden.
 
-#### Scenario: Letzte Karte bewertet
+#### Scenario: Letztes Wort gelernt
 
-- **WHEN** der Nutzer die letzte Karte des Durchgangs bewertet
+- **WHEN** das letzte offene Wort der Sitzung als gelernt gilt
+- **THEN** wird die Sitzungszusammenfassung angezeigt
+
+#### Scenario: Sitzung beenden
+
+- **WHEN** der Nutzer auf "Beenden" tippt
 - **THEN** wird die Sitzungszusammenfassung angezeigt
 
 #### Scenario: Sitzung vorzeitig verlassen
 
-- **WHEN** der Nutzer die Sitzung vor der letzten Karte verlässt
+- **WHEN** der Nutzer die Sitzung beendet oder die App schließt
 - **THEN** bleiben alle bis dahin gespeicherten Bewertungen erhalten
 
 #### Scenario: Serie nach Abbruch fortsetzen
 
-- **WHEN** der Nutzer 7 von 20 Karten als "gewusst" bewertet, die Sitzung verlässt und später einen neuen Durchgang startet
-- **THEN** steht der Zähler dieser 7 Wörter auf 1 und wird im neuen Durchgang weitergezählt
-- **AND** die nicht bewerteten Wörter des abgebrochenen Durchgangs stehen weiterhin auf 0
+- **WHEN** der Nutzer 7 Wörter je einmal als "gewusst" bewertet, die Sitzung beendet und später eine neue Sitzung startet
+- **THEN** steht der Zähler dieser 7 Wörter auf 1 und wird in der neuen Sitzung weitergezählt
+- **AND** alle nicht bewerteten Wörter stehen weiterhin auf 0

@@ -18,7 +18,8 @@ export interface CardGestures {
 /** Bindet die Gestenmaschine an Pointer-Events einer Karte. */
 export function useCardGestures(options: {
   onRate: (rating: Rating) => void;
-  onReveal: () => void;
+  onHold: (held: boolean) => void;
+  onPin: () => void;
 }): CardGestures {
   const [dragX, setDragX] = useState(0);
 
@@ -30,7 +31,8 @@ export function useCardGestures(options: {
     () =>
       createGestureMachine({
         onRate: (rating) => latest.current.onRate(rating),
-        onReveal: () => latest.current.onReveal(),
+        onHold: (held) => latest.current.onHold(held),
+        onPin: () => latest.current.onPin(),
         onDrag: setDragX,
       }),
     [],
@@ -75,7 +77,7 @@ export function useCardGestures(options: {
     machine.cancel();
   }, [machine]);
 
-  // Verhindert das Systemmenü, das sonst den langen Druck unterbricht.
+  // Verhindert das Systemmenü, das sonst die gehaltene Berührung unterbricht.
   const onContextMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
   }, []);

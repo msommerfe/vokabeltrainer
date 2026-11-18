@@ -6,7 +6,7 @@ Das Repository ist leer — es gibt keinen bestehenden Code, keine Build-Konfigu
 
 Prägende Rahmenbedingungen:
 
-- Zielgerät ist das Handy, Hauptinteraktion sind Touch-Gesten (Swipe, langer Druck, Doppeltipp).
+- Zielgerät ist das Handy, Hauptinteraktion sind Touch-Gesten (Swipe, Berühren, Doppeltipp).
 - Kein Backend, keine Benutzerkonten. Alle Daten liegen auf dem Gerät.
 - Die App muss offline starten und laufen.
 - Es ist ein Einzelnutzer-Projekt; einfache Wartbarkeit wiegt schwerer als Skalierbarkeit.
@@ -93,13 +93,13 @@ Beide Importpfade münden in dieselbe Validierung, die je Eintrag entscheidet un
 
 ### Entscheidung 8: Swipe-Gesten über Pointer Events, keine Gesten-Bibliothek
 
-Wischen, langer Druck und Doppeltipp werden über Pointer Events mit Schwellenwerten für Distanz und Dauer umgesetzt; die Karte folgt dem Finger über CSS-Transforms.
+Wischen, Berühren-zum-Anzeigen und Doppeltipp werden über Pointer Events mit Schwellenwerten für Distanz und Zeitfenster umgesetzt; die Karte folgt dem Finger über CSS-Transforms.
 
 **Warum:** Pointer Events decken Touch und Maus einheitlich ab, was das Testen am Desktop ermöglicht. Der Gestenbedarf ist klein und klar abgegrenzt; eine Bibliothek würde für drei Gesten eine Abhängigkeit mit eigener Lernkurve einführen.
 
-**Trade-off:** Schwellenwerte (Wischdistanz, 500 ms für langen Druck, Doppeltipp-Fenster) müssen am Gerät justiert werden. Sie werden als benannte Konstanten an einer Stelle gehalten.
+**Trade-off:** Schwellenwerte (Wischdistanz, Doppeltipp-Fenster) müssen am Gerät justiert werden. Sie werden als benannte Konstanten an einer Stelle gehalten.
 
-**Konfliktauflösung:** Langer Druck und Wischen schließen sich aus — sobald die Bewegung die Wischschwelle überschreitet, wird der Lange-Druck-Timer verworfen. Ein Doppeltipp zählt nur, wenn beide Tipps ohne nennenswerte Bewegung erfolgen.
+**Konfliktauflösung:** Eine Berührung deckt die Übersetzung sofort vorläufig auf; Loslassen oder Abbruch der Berührung verbirgt sie wieder, sofern sie nicht per Doppeltipp fixiert wurde. Wischen ändert die Sichtbarkeit nicht. Ein Doppeltipp zählt nur, wenn beide Tipps ohne nennenswerte Bewegung erfolgen; er fixiert die Anzeige bis zur nächsten Karte. Bewusst in Kauf genommen: Beim ersten Tipp eines Doppeltipps blitzt die Übersetzung kurz auf.
 
 ### Entscheidung 9: Service Worker über vite-plugin-pwa
 
@@ -107,13 +107,13 @@ Manifest und Service Worker werden generiert statt von Hand geschrieben; Precach
 
 **Warum:** Ein handgeschriebener Service Worker mit korrektem Update- und Cache-Invalidierungsverhalten ist eine bekannte Fehlerquelle (festhängende alte Versionen). Die Nutzerdaten liegen ohnehin in IndexedDB und sind vom Shell-Cache unberührt — Updates können den Cache gefahrlos ersetzen.
 
-### Entscheidung 10: Kartenauswahl in zufälliger Reihenfolge je Durchgang
+### Entscheidung 10: Zufälliges Ziehen aus allen offenen Wörtern
 
-Ein Durchgang enthält alle in dieser Richtung offenen Wörter, gemischt. Falsch beantwortete Wörter kommen im selben Durchgang nicht erneut.
+Eine Sitzung umfasst alle in dieser Richtung offenen Wörter. Jede Karte wird gleichverteilt aus den aktuell offenen Wörtern gezogen, ohne Gewichtung nach Fehlern. Dasselbe Wort kommt nicht zweimal direkt hintereinander, solange mehrere Wörter offen sind. Gelernte Wörter fallen sofort heraus. Die Sitzung hat kein festes Ende; sie endet, wenn alle Wörter gelernt sind oder der Nutzer "Beenden" wählt.
 
-**Warum:** Mischen verhindert, dass die Listenreihenfolge mitgelernt wird. Kein Wiedervorlegen im selben Durchgang hält die Sitzung endlich und die Zusammenfassung aussagekräftig.
+**Warum:** Nicht gewusste Wörter sollen zeitnah wiederkommen, nicht erst in der nächsten Runde. Zufälliges Ziehen verhindert, dass die Listenreihenfolge mitgelernt wird.
 
-**Alternative:** Falsche Wörter ans Ende anhängen — verlängert die Sitzung unvorhersehbar und steht im Konflikt mit der Spec "Sitzung endet, wenn alle Karten bewertet wurden".
+**Alternative:** Gemischte Runde ohne Wiederholung, begrenzt auf 20 Karten — verworfen, weil falsch beantwortete Wörter so erst in einem späteren Durchgang wiederkommen.
 
 ### Entscheidung 11: Vitest als Testrunner
 
@@ -122,7 +122,8 @@ Ein Durchgang enthält alle in dieser Richtung offenen Wörter, gemischt. Falsch
 ## Risks / Trade-offs
 
 - **Schwellenwerte für Gesten fühlen sich auf echten Geräten falsch an** → Als benannte Konstanten an einer Stelle halten; auf einem echten Handy prüfen, bevor die Oberfläche als fertig gilt.
-- **Langer Druck kollidiert mit dem Kontextmenü des Browsers** → Kontextmenü und Textauswahl auf der Karte unterbinden; auf iOS Safari und Android Chrome gegenprüfen.
+- **Gehaltene Berührung kollidiert mit dem Kontextmenü des Browsers** → Kontextmenü und Textauswahl auf der Karte unterbinden; auf iOS Safari und Android Chrome gegenprüfen.
+- **Sitzung ohne festes Ende wirkt bei großen Listen ziellos** → Anzahl offener Wörter anzeigen und "Beenden" jederzeit erreichbar halten.
 - **IndexedDB ist im privaten Modus eingeschränkt oder wird vom System geleert** → Fehlerfall sichtbar melden (Spec `learning-progress`), Sitzung bleibt im Speicher bedienbar. Export/Import des Fortschritts ist eine mögliche spätere Absicherung, aber nicht in diesem Scope.
 - **Ableitung des Wort-Schlüssels aus dem Wortpaar kollidiert bei Homonymen** → Bei doppeltem Schlüssel innerhalb einer Liste den zweiten Eintrag als Duplikat melden, statt den Fortschritt still zu teilen.
 - **Service Worker liefert nach einem Update die alte Version aus** → Generierte Konfiguration statt Handarbeit; Update-Verhalten nach dem ersten Deployment einmal bewusst durchspielen.

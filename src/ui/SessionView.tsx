@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { buildRound, emptyTally, type SessionTally } from '../domain/session';
+import { drawNext, emptyTally, openEntries, type SessionTally } from '../domain/session';
 import { directionLabels, type Direction, type VocabList } from '../domain/types';
 import type { ProgressRecord, Rating } from '../domain/types';
 import { Card } from './Card';
@@ -23,19 +23,21 @@ export function SessionView({
   onLeave,
   onReset,
 }: SessionViewProps) {
-  // Der Durchgang wird beim Betreten einmal festgelegt. `progress` ist bewusst keine
-  // Abhängigkeit: Sonst würde ein bewertetes Wort den laufenden Durchgang neu mischen.
+  // Die offenen Wörter werden beim Betreten festgelegt; während der Sitzung
+  // fallen nur die hier neu gelernten heraus.
   const progressAtStart = useRef(progress);
-  const round = useMemo(
-    () => buildRound(list.entries, progressAtStart.current, list.id, direction),
+  const initialOpen = useMemo(
+    () => openEntries(list.entries, progressAtStart.current, list.id, direction),
     [list.entries, list.id, direction],
   );
 
-  const [position, setPosition] = useState(0);
+  const [current, setCurrent] = useState(() => drawNext(initialOpen));
+  const [draws, setDraws] = useState(0);
+  const [learnedKeys, setLearnedKeys] = useState<ReadonlySet<string>>(() => new Set());
   const [tally, setTally] = useState<SessionTally>(emptyTally);
   const labels = directionLabels(list, direction);
 
-  if (round.length === 0) {
+  if (initialOpen.length === 0) {
     return (
       <section className="screen">
         <header className="screen-header">
@@ -56,10 +58,12 @@ export function SessionView({
     );
   }
 
-  const entry = round[position];
+  const entry = current;
   if (entry === undefined) {
     return null;
   }
+
+  const remaining = initialOpen.length - learnedKeys.size;
 
   const handleRate = (rating: Rating): void => {
     void (async () => {
@@ -72,10 +76,18 @@ export function SessionView({
       };
       setTally(nextTally);
 
-      if (position + 1 >= round.length) {
+      const nextLearned = newlyLearned ? new Set(learnedKeys).add(entry.key) : learnedKeys;
+      setLearnedKeys(nextLearned);
+
+      const next = drawNext(
+        initialOpen.filter((item) => !nextLearned.has(item.key)),
+        entry.key,
+      );
+      if (next === undefined) {
         onFinish(nextTally);
       } else {
-        setPosition(position + 1);
+        setCurrent(next);
+        setDraws((count) => count + 1);
       }
     })();
   };
@@ -83,17 +95,32 @@ export function SessionView({
   return (
     <section className="screen">
       <header className="screen-header">
-        <button type="button" className="link-button" onClick={onLeave}>
-          ← Übersicht
+        <button
+          type="button"
+          className="link-button"
+          onClick={() => {
+            onFinish(tally);
+          }}
+        >
+          Beenden
         </button>
-        <span className="screen-progress">
-          {position + 1} / {round.length}
-        </span>
+        <span className="screen-progress">{remaining} offen</span>
       </header>
 
-      <progress className="session-bar" value={position} max={round.length} />
+      <progress
+        className="session-bar"
+        value={list.entries.length - remaining}
+        max={list.entries.length}
+      />
 
-      <Card entry={entry} direction={direction} labels={labels} onRate={handleRate} />
+      {/* Neuer Key je Ziehung, damit auch ein wiederholtes Wort verdeckt startet. */}
+      <Card
+        key={draws}
+        entry={entry}
+        direction={direction}
+        labels={labels}
+        onRate={handleRate}
+      />
     </section>
   );
 }

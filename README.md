@@ -4,10 +4,12 @@ Karteikarten-Trainer für eigene Vokabellisten. Installierbare PWA, offline nutz
 
 - Swipe nach **rechts** = Wort gewusst
 - Swipe nach **links** = Wort nicht gewusst
-- **Langer Druck** oder **Doppeltipp** deckt die Übersetzung samt Beispielen auf
-- Ein Wort gilt nach **3× in Folge gewusst** als gelernt und wird nicht mehr abgefragt
-- Ein Durchgang umfasst höchstens **20 Karten**, zufällig aus den noch offenen Wörtern gewählt
-- Jede Bewertung wird sofort gespeichert — ein Abbruch mitten im Durchgang verliert nichts
+- **Berühren** zeigt die Übersetzung samt Beispielen, solange der Finger auf der Karte liegt
+- **Doppeltipp** hält die Übersetzung bis zur nächsten Karte sichtbar
+- Ein Wort gilt nach **3× in Folge gewusst** als gelernt und fällt sofort aus der Abfrage
+- Eine Sitzung umfasst **alle offenen Wörter**. Die Karten werden zufällig gezogen; ein Wort kann wiederkommen, bevor alle anderen dran waren, aber nicht direkt hintereinander
+- Die Sitzung läuft, bis alle Wörter gelernt sind oder sie mit **Beenden** abgeschlossen wird
+- Jede Bewertung wird sofort gespeichert — ein Abbruch mitten in der Sitzung verliert nichts
 - Abfrage in beide Richtungen, Fortschritt je Richtung getrennt
 
 Alle Daten bleiben auf dem Gerät. Es gibt kein Backend und keine Übertragung an Dritte.
@@ -114,7 +116,7 @@ Doppelte Wortpaare innerhalb einer Liste werden erkannt: Der erste Eintrag wird 
 
 | Pfad | Inhalt |
 | --- | --- |
-| `src/domain/` | Lernlogik ohne UI-Abhängigkeiten (Streak, Gelernt-Kriterium, Durchgänge) |
+| `src/domain/` | Lernlogik ohne UI-Abhängigkeiten (Streak, Gelernt-Kriterium, Kartenauswahl) |
 | `src/import/` | Validierung und Importer für JSON und CSV |
 | `src/storage/` | Persistenz in IndexedDB |
 | `src/ui/` | React-Oberfläche und Gestensteuerung |

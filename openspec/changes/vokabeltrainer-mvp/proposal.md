@@ -9,7 +9,8 @@ Es gibt noch keine Anwendung in diesem Projekt. Zum Vokabellernen unterwegs fehl
 Neuaufbau einer Progressive Web App (greenfield), die auf dem Handy installierbar und offline nutzbar ist.
 
 - **Wortlisten**: Import eigener Listen als JSON und CSV; zusätzlich mitgelieferte Beispiellisten. Ein Eintrag besteht aus Wort in Sprache A, Wort in Sprache B und optional mehreren Beispielsätzen.
-- **Karteikarten-Session**: Eine Karte zeigt das Abfragewort. Langes Drücken oder Doppeltippen deckt die Übersetzung inklusive Beispiele auf.
+- **Karteikarten-Session**: Eine Karte zeigt das Abfragewort. Solange die Karte berührt wird, sind Übersetzung und Beispiele sichtbar; beim Loslassen verschwinden sie wieder. Ein Doppeltipp zeigt die Übersetzung dauerhaft bis zur nächsten Karte.
+- **Sitzungsablauf**: Eine Sitzung umfasst alle offenen Wörter der gewählten Richtung. Die Karten werden zufällig gezogen; ein Wort kann erneut erscheinen, bevor alle anderen einmal abgefragt wurden. Gelernte Wörter fallen sofort heraus. Die Sitzung läuft, bis alle Wörter gelernt sind oder der Nutzer sie beendet.
 - **Bewertung per Swipe**: Swipe nach rechts = gewusst, Swipe nach links = nicht gewusst.
 - **Lernrichtung**: Abfrage in beide Richtungen (A→B und B→A), umschaltbar.
 - **Gelernt-Status**: Ein Wort gilt nach 3× in Folge "gewusst" als gelernt und wird aus der aktiven Abfrage genommen. Ein "nicht gewusst" setzt die Serie zurück.

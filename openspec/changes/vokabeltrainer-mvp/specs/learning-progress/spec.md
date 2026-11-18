@@ -22,18 +22,19 @@ Das System MUSS je Wort und Abfragerichtung zählen, wie oft es in Folge als "ge
 
 ### Requirement: Gelernt-Kriterium
 
-Ein Wort MUSS in einer Abfragerichtung als gelernt gelten, sobald es dreimal in Folge als "gewusst" bewertet wurde. Ein als gelernt geltendes Wort MUSS aus den folgenden Sitzungen dieser Richtung ausgenommen werden.
+Ein Wort MUSS in einer Abfragerichtung als gelernt gelten, sobald es dreimal in Folge als "gewusst" bewertet wurde. Ein als gelernt geltendes Wort MUSS sofort aus der laufenden Sitzung und aus folgenden Sitzungen dieser Richtung ausgenommen werden.
 
 #### Scenario: Dritte korrekte Antwort in Folge
 
 - **WHEN** ein Wort mit Zählerstand 2 erneut als "gewusst" bewertet wird
 - **THEN** gilt das Wort in dieser Richtung als gelernt
+- **AND** das Wort erscheint in der laufenden Sitzung nicht mehr
 - **AND** der Nutzer wird in der Sitzungszusammenfassung darauf hingewiesen
 
 #### Scenario: Gelerntes Wort erscheint nicht erneut
 
 - **WHEN** eine neue Sitzung in derselben Richtung gestartet wird
-- **THEN** enthält der Durchgang keine Wörter, die in dieser Richtung als gelernt gelten
+- **THEN** enthält die Sitzung keine Wörter, die in dieser Richtung als gelernt gelten
 
 ### Requirement: Fortschritt je Richtung getrennt
 

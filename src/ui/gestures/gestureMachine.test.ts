@@ -1,22 +1,15 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createGestureMachine, GESTURE, type GestureCallbacks } from './gestureMachine';
 
 function setup() {
-  const callbacks: GestureCallbacks = {
-    onRate: vi.fn(),
-    onReveal: vi.fn(),
-    onDrag: vi.fn(),
+  const callbacks = {
+    onRate: vi.fn<GestureCallbacks['onRate']>(),
+    onHold: vi.fn<GestureCallbacks['onHold']>(),
+    onPin: vi.fn<GestureCallbacks['onPin']>(),
+    onDrag: vi.fn<GestureCallbacks['onDrag']>(),
   };
   return { callbacks, machine: createGestureMachine(callbacks) };
 }
-
-beforeEach(() => {
-  vi.useFakeTimers();
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-});
 
 describe('Wischen', () => {
   it('wertet eine Wischgeste nach rechts als "gewusst"', () => {
@@ -74,60 +67,53 @@ describe('abgebrochene Wischgeste', () => {
   });
 });
 
-describe('langer Druck', () => {
-  it('deckt nach der Haltedauer auf', () => {
+describe('Berühren', () => {
+  it('meldet die Berührung sofort, ohne Wartezeit', () => {
     const { callbacks, machine } = setup();
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
-    vi.advanceTimersByTime(GESTURE.longPressMs);
 
-    expect(callbacks.onReveal).toHaveBeenCalledOnce();
+    expect(callbacks.onHold).toHaveBeenCalledExactlyOnceWith(true);
   });
 
-  it('deckt kurz vor Ablauf der Haltedauer noch nicht auf', () => {
+  it('meldet das Loslassen', () => {
     const { callbacks, machine } = setup();
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
-    vi.advanceTimersByTime(GESTURE.longPressMs - 1);
+    machine.pointerUp({ x: 100, y: 200, time: 800 });
 
-    expect(callbacks.onReveal).not.toHaveBeenCalled();
+    expect(callbacks.onHold).toHaveBeenLastCalledWith(false);
+    expect(callbacks.onPin).not.toHaveBeenCalled();
   });
 
-  it('verwirft den Timer, sobald die Bewegung die Tipp-Toleranz überschreitet', () => {
+  it('meldet das Ende der Berührung auch bei einem Abbruch', () => {
     const { callbacks, machine } = setup();
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
-    machine.pointerMove({ x: 100 + GESTURE.swipeThresholdPx, y: 200, time: 100 });
-    vi.advanceTimersByTime(GESTURE.longPressMs);
+    machine.cancel();
 
-    expect(callbacks.onReveal).not.toHaveBeenCalled();
+    expect(callbacks.onHold).toHaveBeenLastCalledWith(false);
   });
 
-  it('deckt bei einer Bewegung innerhalb der Tipp-Toleranz weiterhin auf', () => {
+  it('hält die Berührung während einer Wischbewegung aufrecht und bewertet trotzdem', () => {
     const { callbacks, machine } = setup();
+    const end = 100 + GESTURE.swipeThresholdPx;
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
-    machine.pointerMove({ x: 100 + GESTURE.tapTolerancePx, y: 200, time: 100 });
-    vi.advanceTimersByTime(GESTURE.longPressMs);
+    machine.pointerMove({ x: 140, y: 200, time: 20 });
+    machine.pointerMove({ x: end, y: 200, time: 40 });
 
-    expect(callbacks.onReveal).toHaveBeenCalledOnce();
-  });
+    expect(callbacks.onHold).toHaveBeenCalledExactlyOnceWith(true);
 
-  it('wertet das Loslassen nach einem langen Druck nicht als Tipp', () => {
-    const { callbacks, machine } = setup();
+    machine.pointerUp({ x: end, y: 200, time: 50 });
 
-    machine.pointerDown({ x: 100, y: 200, time: 0 });
-    vi.advanceTimersByTime(GESTURE.longPressMs);
-    machine.pointerUp({ x: 100, y: 200, time: GESTURE.longPressMs });
-    machine.pointerDown({ x: 100, y: 200, time: GESTURE.longPressMs + 10 });
-    machine.pointerUp({ x: 100, y: 200, time: GESTURE.longPressMs + 20 });
-
-    expect(callbacks.onReveal).toHaveBeenCalledOnce();
+    expect(callbacks.onRate).toHaveBeenCalledExactlyOnceWith('known');
+    expect(callbacks.onHold).toHaveBeenLastCalledWith(false);
   });
 });
 
 describe('Doppeltipp', () => {
-  it('deckt bei zwei Tipps ohne nennenswerte Bewegung auf', () => {
+  it('fixiert die Anzeige bei zwei Tipps ohne nennenswerte Bewegung', () => {
     const { callbacks, machine } = setup();
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
@@ -135,19 +121,19 @@ describe('Doppeltipp', () => {
     machine.pointerDown({ x: 102, y: 201, time: 120 });
     machine.pointerUp({ x: 102, y: 201, time: 160 });
 
-    expect(callbacks.onReveal).toHaveBeenCalledOnce();
+    expect(callbacks.onPin).toHaveBeenCalledOnce();
   });
 
-  it('deckt bei einem einzelnen Tipp nicht auf', () => {
+  it('fixiert bei einem einzelnen Tipp nicht', () => {
     const { callbacks, machine } = setup();
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
     machine.pointerUp({ x: 100, y: 200, time: 40 });
 
-    expect(callbacks.onReveal).not.toHaveBeenCalled();
+    expect(callbacks.onPin).not.toHaveBeenCalled();
   });
 
-  it('deckt nicht auf, wenn der zweite Tipp zu spät kommt', () => {
+  it('fixiert nicht, wenn der zweite Tipp zu spät kommt', () => {
     const { callbacks, machine } = setup();
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
@@ -156,10 +142,10 @@ describe('Doppeltipp', () => {
     machine.pointerDown({ x: 100, y: 200, time: tooLate - 10 });
     machine.pointerUp({ x: 100, y: 200, time: tooLate });
 
-    expect(callbacks.onReveal).not.toHaveBeenCalled();
+    expect(callbacks.onPin).not.toHaveBeenCalled();
   });
 
-  it('deckt nicht auf, wenn zwischen den Tipps gewischt wurde', () => {
+  it('fixiert nicht, wenn zwischen den Tipps gewischt wurde', () => {
     const { callbacks, machine } = setup();
 
     machine.pointerDown({ x: 100, y: 200, time: 0 });
@@ -170,6 +156,6 @@ describe('Doppeltipp', () => {
     machine.pointerDown({ x: 100, y: 200, time: 140 });
     machine.pointerUp({ x: 100, y: 200, time: 160 });
 
-    expect(callbacks.onReveal).not.toHaveBeenCalled();
+    expect(callbacks.onPin).not.toHaveBeenCalled();
   });
 });

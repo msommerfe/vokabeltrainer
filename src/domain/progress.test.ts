@@ -8,7 +8,7 @@ import {
   streakOf,
   summarizeProgress,
 } from './progress';
-import { buildRound, MAX_ROUND_SIZE } from './session';
+import { drawNext, openEntries } from './session';
 import type { Direction, ProgressRecord, VocabEntry } from './types';
 
 const LIST = 'liste-1';
@@ -84,80 +84,86 @@ describe('Trennung je Richtung', () => {
   });
 });
 
-describe('buildRound', () => {
+describe('openEntries', () => {
   const entries = [entry('Haus', 'house'), entry('Hund', 'dog'), entry('Katze', 'cat')];
 
   it('lässt gelernte Wörter weg', () => {
     const index = indexProgress([record(entries[0]!.key, 'a-to-b', 3, true)]);
 
-    const round = buildRound(entries, index, LIST, 'a-to-b', () => 0);
+    const open = openEntries(entries, index, LIST, 'a-to-b');
 
-    expect(round.map((item) => item.key)).not.toContain(entries[0]!.key);
-    expect(round).toHaveLength(2);
-  });
-
-  it('enthält jedes offene Wort genau einmal', () => {
-    const round = buildRound(entries, indexProgress([]), LIST, 'a-to-b', () => 0.5);
-
-    expect(new Set(round.map((item) => item.key)).size).toBe(3);
-    expect(round).toHaveLength(3);
+    expect(open.map((item) => item.key)).not.toContain(entries[0]!.key);
+    expect(open).toHaveLength(2);
   });
 
   it('nimmt gelernte Wörter nur in der betroffenen Richtung heraus', () => {
     const index = indexProgress([record(entries[0]!.key, 'a-to-b', 3, true)]);
 
-    expect(buildRound(entries, index, LIST, 'a-to-b', () => 0)).toHaveLength(2);
-    expect(buildRound(entries, index, LIST, 'b-to-a', () => 0)).toHaveLength(3);
+    expect(openEntries(entries, index, LIST, 'a-to-b')).toHaveLength(2);
+    expect(openEntries(entries, index, LIST, 'b-to-a')).toHaveLength(3);
   });
 
   it('ist leer, wenn alle Wörter gelernt sind', () => {
     const index = indexProgress(entries.map((item) => record(item.key, 'a-to-b', 3, true)));
 
-    expect(buildRound(entries, index, LIST, 'a-to-b', () => 0)).toEqual([]);
+    expect(openEntries(entries, index, LIST, 'a-to-b')).toEqual([]);
   });
 });
 
-describe('Begrenzung der Durchgangsgröße', () => {
+describe('drawNext', () => {
   const hundred = Array.from({ length: 100 }, (_, index) => entry(`Wort${index}`, `word${index}`));
 
-  it('legt bei 100 offenen Wörtern nur 20 Karten vor', () => {
-    expect(buildRound(hundred, indexProgress([]), LIST, 'a-to-b')).toHaveLength(MAX_ROUND_SIZE);
-  });
-
-  it('legt jedes Wort im Durchgang höchstens einmal vor', () => {
-    const round = buildRound(hundred, indexProgress([]), LIST, 'a-to-b');
-
-    expect(new Set(round.map((item) => item.key)).size).toBe(round.length);
-  });
-
-  it('nimmt bei weniger als 20 offenen Wörtern alle', () => {
-    const twelve = hundred.slice(0, 12);
-
-    expect(buildRound(twelve, indexProgress([]), LIST, 'a-to-b')).toHaveLength(12);
-  });
-
-  it('zählt nur offene Wörter gegen die Grenze', () => {
-    const learned = hundred.slice(0, 90).map((item) => record(item.key, 'a-to-b', 3, true));
-
-    expect(buildRound(hundred, indexProgress(learned), LIST, 'a-to-b')).toHaveLength(10);
-  });
-
-  it('wählt die Karten zufällig aus, nicht immer dieselben', () => {
-    const first = buildRound(hundred, indexProgress([]), LIST, 'a-to-b').map((item) => item.key);
-    const second = buildRound(hundred, indexProgress([]), LIST, 'a-to-b').map((item) => item.key);
-
-    expect(first).not.toEqual(second);
-  });
-
-  it('kann über mehrere Durchgänge jedes Wort erreichen', () => {
+  it('kann bei 100 offenen Wörtern jedes Wort ziehen, ohne Obergrenze', () => {
     const seen = new Set<string>();
-    for (let round = 0; round < 60; round += 1) {
-      for (const item of buildRound(hundred, indexProgress([]), LIST, 'a-to-b')) {
-        seen.add(item.key);
+    for (let slot = 0; slot < hundred.length; slot += 1) {
+      const drawn = drawNext(hundred, undefined, () => (slot + 0.5) / hundred.length);
+      if (drawn !== undefined) {
+        seen.add(drawn.key);
       }
     }
 
     expect(seen.size).toBe(hundred.length);
+  });
+
+  it('erlaubt eine Wiederholung, bevor alle Wörter einmal dran waren', () => {
+    const first = drawNext(hundred, undefined, () => 0);
+    const second = drawNext(hundred, first?.key, () => 0);
+    const third = drawNext(hundred, second?.key, () => 0);
+
+    expect(first?.key).toBe(hundred[0]!.key);
+    expect(second?.key).toBe(hundred[1]!.key);
+    expect(third?.key).toBe(first?.key);
+  });
+
+  it('zieht dasselbe Wort nicht direkt hintereinander, solange andere offen sind', () => {
+    const three = hundred.slice(0, 3);
+    for (const value of [0, 0.2, 0.4, 0.6, 0.8, 0.999]) {
+      expect(drawNext(three, three[1]!.key, () => value)?.key).not.toBe(three[1]!.key);
+    }
+  });
+
+  it('zieht das letzte offene Wort auch direkt hintereinander', () => {
+    const single = hundred.slice(0, 1);
+
+    expect(drawNext(single, single[0]!.key, () => 0.5)).toBe(single[0]);
+  });
+
+  it('liefert nichts, wenn kein Wort offen ist', () => {
+    expect(drawNext([], undefined, () => 0)).toBeUndefined();
+  });
+
+  it('zieht ein Wort nach dem dritten Treffer in Folge nicht mehr', () => {
+    const three = hundred.slice(0, 3);
+    const target = three[0]!;
+    let current: ProgressRecord | undefined;
+    for (let hit = 0; hit < 3; hit += 1) {
+      current = applyRating(current, 'known', { ...context, entryKey: target.key });
+    }
+    const open = openEntries(three, indexProgress(current ? [current] : []), LIST, 'a-to-b');
+
+    for (const value of [0, 0.3, 0.6, 0.999]) {
+      expect(drawNext(open, undefined, () => value)?.key).not.toBe(target.key);
+    }
   });
 });
 

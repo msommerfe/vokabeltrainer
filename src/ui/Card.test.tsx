@@ -42,22 +42,34 @@ describe('Card', () => {
     ],
   };
 
-  it('zeigt die Übersetzung erst nach dem Aufdecken', () => {
+  it('zeigt die Übersetzung nur, solange die Karte berührt wird', () => {
     const { card } = renderCard(plain);
 
     expect(within(card).queryByText('the house')).toBeNull();
+
+    fireEvent.pointerDown(card, { clientX: 100, clientY: 200, pointerId: 1 });
+    expect(within(card).getByText('the house')).not.toBeNull();
+
+    fireEvent.pointerUp(card, { clientX: 100, clientY: 200, pointerId: 1, timeStamp: 900 });
+    expect(within(card).queryByText('the house')).toBeNull();
+  });
+
+  it('hält die Übersetzung nach einem Doppeltipp dauerhaft sichtbar', () => {
+    const { card } = renderCard(plain);
 
     doubleTap(card);
 
     expect(within(card).getByText('the house')).not.toBeNull();
   });
 
-  it('deckt bei einem einzelnen Tipp nicht auf', () => {
-    const { card } = renderCard(plain);
+  it('startet die nächste Karte nach einem Doppeltipp wieder verdeckt', () => {
+    const { card, rerender } = renderCard(plain);
+    doubleTap(card);
 
-    tap(card, 10);
+    const next: VocabEntry = { key: 'hund|dog', wordA: 'der Hund', wordB: 'the dog', examples: [] };
+    rerender(<Card entry={next} direction="a-to-b" labels={labels} onRate={vi.fn()} />);
 
-    expect(within(card).queryByText('the house')).toBeNull();
+    expect(within(card).queryByText('the dog')).toBeNull();
   });
 
   it('zeigt beim Aufdecken alle Beispiele in beiden Sprachen', () => {
@@ -93,15 +105,17 @@ describe('Card', () => {
     expect(onRate).toHaveBeenCalledExactlyOnceWith('unknown');
   });
 
-  it('wertet eine Karte auch ohne vorheriges Aufdecken', () => {
+  it('zeigt die Übersetzung während des Wischens und bewertet trotzdem', () => {
     const { card, onRate } = renderCard(plain);
     const end = 100 + GESTURE.swipeThresholdPx;
 
     fireEvent.pointerDown(card, { clientX: 100, clientY: 200, pointerId: 1 });
     fireEvent.pointerMove(card, { clientX: end, clientY: 200, pointerId: 1 });
+
+    expect(within(card).getByText('the house')).not.toBeNull();
+
     fireEvent.pointerUp(card, { clientX: end, clientY: 200, pointerId: 1 });
 
-    expect(within(card).queryByText('the house')).toBeNull();
     expect(onRate).toHaveBeenCalledOnce();
   });
 

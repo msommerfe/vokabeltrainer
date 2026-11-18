@@ -4,8 +4,6 @@ import type { Rating } from '../../domain/types';
 export const GESTURE = {
   /** Horizontale Strecke in Pixeln, ab der eine Wischgeste auslöst. */
   swipeThresholdPx: 90,
-  /** Haltedauer in Millisekunden, ab der ein langer Druck aufdeckt. */
-  longPressMs: 500,
   /** Zeitfenster in Millisekunden zwischen zwei Tipps eines Doppeltipps. */
   doubleTapWindowMs: 300,
   /** Bewegung in Pixeln, bis zu der ein Kontakt noch als Tipp gilt. */
@@ -20,7 +18,10 @@ export interface PointerSample {
 
 export interface GestureCallbacks {
   onRate: (rating: Rating) => void;
-  onReveal: () => void;
+  /** Meldet, ob die Karte gerade berührt wird. */
+  onHold: (held: boolean) => void;
+  /** Doppeltipp: Übersetzung dauerhaft zeigen. */
+  onPin: () => void;
   onDrag: (deltaX: number) => void;
 }
 
@@ -39,41 +40,22 @@ interface Contact {
 }
 
 /**
- * Wischen, langer Druck und Doppeltipp als reine Zustandsmaschine.
- * Langer Druck und Wischen schließen sich aus: Sobald die Bewegung die
- * Tipp-Toleranz überschreitet, wird der Timer verworfen.
+ * Wischen, Berühren und Doppeltipp als reine Zustandsmaschine.
+ * Die Berührung wird unabhängig von Bewegung gemeldet, damit die Übersetzung
+ * auch während des Wischens sichtbar bleibt.
  */
 export function createGestureMachine(callbacks: GestureCallbacks): GestureMachine {
   let contact: Contact | undefined;
-  let longPressTimer: ReturnType<typeof setTimeout> | undefined;
-  let revealedByLongPress = false;
   let lastTapTime: number | undefined;
 
-  const clearLongPress = (): void => {
-    if (longPressTimer !== undefined) {
-      clearTimeout(longPressTimer);
-      longPressTimer = undefined;
-    }
-  };
-
   const reset = (): void => {
-    clearLongPress();
     contact = undefined;
-    revealedByLongPress = false;
   };
 
   return {
     pointerDown(sample) {
       contact = { startX: sample.x, startY: sample.y, moved: false };
-      revealedByLongPress = false;
-      clearLongPress();
-      longPressTimer = setTimeout(() => {
-        longPressTimer = undefined;
-        if (contact !== undefined && !contact.moved) {
-          revealedByLongPress = true;
-          callbacks.onReveal();
-        }
-      }, GESTURE.longPressMs);
+      callbacks.onHold(true);
     },
 
     pointerMove(sample) {
@@ -85,7 +67,6 @@ export function createGestureMachine(callbacks: GestureCallbacks): GestureMachin
 
       if (Math.abs(deltaX) > GESTURE.tapTolerancePx || Math.abs(deltaY) > GESTURE.tapTolerancePx) {
         contact.moved = true;
-        clearLongPress();
       }
       if (contact.moved) {
         callbacks.onDrag(deltaX);
@@ -98,9 +79,9 @@ export function createGestureMachine(callbacks: GestureCallbacks): GestureMachin
       }
       const current = contact;
       const deltaX = sample.x - current.startX;
-      clearLongPress();
 
       if (Math.abs(deltaX) >= GESTURE.swipeThresholdPx) {
+        callbacks.onHold(false);
         callbacks.onDrag(0);
         callbacks.onRate(deltaX > 0 ? 'known' : 'unknown');
         lastTapTime = undefined;
@@ -111,12 +92,11 @@ export function createGestureMachine(callbacks: GestureCallbacks): GestureMachin
       // Unterhalb der Auslöseschwelle springt die Karte zurück, ohne zu bewerten.
       callbacks.onDrag(0);
 
-      const wasTap = !current.moved && !revealedByLongPress;
-      if (wasTap) {
+      if (!current.moved) {
         const previous = lastTapTime;
         if (previous !== undefined && sample.time - previous <= GESTURE.doubleTapWindowMs) {
           lastTapTime = undefined;
-          callbacks.onReveal();
+          callbacks.onPin();
         } else {
           lastTapTime = sample.time;
         }
@@ -124,12 +104,14 @@ export function createGestureMachine(callbacks: GestureCallbacks): GestureMachin
         lastTapTime = undefined;
       }
 
+      callbacks.onHold(false);
       reset();
     },
 
     cancel() {
       if (contact !== undefined) {
         callbacks.onDrag(0);
+        callbacks.onHold(false);
       }
       lastTapTime = undefined;
       reset();

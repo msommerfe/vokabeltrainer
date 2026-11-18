@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { applyRating, indexProgress } from './progress';
-import { buildRound, MAX_ROUND_SIZE } from './session';
+import { drawNext, openEntries } from './session';
 import type { Direction, VocabEntry } from './types';
 import { createMemoryStore } from '../storage/memory';
 
@@ -16,11 +16,11 @@ describe('abgebrochene Sitzung', () => {
     const entries = Array.from({ length: 100 }, (_, index) => entry(index));
     const store = createMemoryStore();
 
-    const round = buildRound(entries, indexProgress([]), LIST, DIRECTION);
-    expect(round).toHaveLength(MAX_ROUND_SIZE);
+    const open = openEntries(entries, indexProgress([]), LIST, DIRECTION);
+    expect(open).toHaveLength(100);
 
-    // Nur die ersten 7 Karten bewerten, dann die Sitzung verlassen.
-    const rated = round.slice(0, 7);
+    // Nur 7 Wörter bewerten, dann die Sitzung verlassen.
+    const rated = open.slice(0, 7);
     for (const item of rated) {
       const next = applyRating(undefined, 'known', {
         listId: LIST,
@@ -39,7 +39,7 @@ describe('abgebrochene Sitzung', () => {
     }
   });
 
-  it('setzt eine unterbrochene Serie im nächsten Durchgang fort', async () => {
+  it('setzt eine unterbrochene Serie in der nächsten Sitzung fort', async () => {
     const item = entry(0);
     const store = createMemoryStore();
 
@@ -52,7 +52,7 @@ describe('abgebrochene Sitzung', () => {
       }),
     );
 
-    // Neuer Durchgang: Stand aus dem Speicher laden und weiterzählen.
+    // Neue Sitzung: Stand aus dem Speicher laden und weiterzählen.
     const loaded = indexProgress(await store.listProgress(LIST));
     const previous = loaded.get(`${LIST}::${DIRECTION}::${item.key}`);
     const next = applyRating(previous, 'known', {
@@ -66,14 +66,14 @@ describe('abgebrochene Sitzung', () => {
     expect(next.streak).toBe(2);
   });
 
-  it('lässt nicht bewertete Wörter des Durchgangs bei 0', async () => {
+  it('lässt nicht bewertete Wörter bei 0', async () => {
     const entries = Array.from({ length: 30 }, (_, index) => entry(index));
     const store = createMemoryStore();
 
-    const round = buildRound(entries, indexProgress([]), LIST, DIRECTION);
-    const first = round[0];
+    const open = openEntries(entries, indexProgress([]), LIST, DIRECTION);
+    const first = drawNext(open);
     if (first === undefined) {
-      throw new Error('leerer Durchgang');
+      throw new Error('keine offene Karte');
     }
     await store.saveProgress(
       applyRating(undefined, 'known', {
@@ -87,7 +87,7 @@ describe('abgebrochene Sitzung', () => {
     const stored = indexProgress(await store.listProgress(LIST));
 
     expect(await store.listProgress(LIST)).toHaveLength(1);
-    for (const item of round.slice(1)) {
+    for (const item of open.filter((candidate) => candidate.key !== first.key)) {
       expect(stored.get(`${LIST}::${DIRECTION}::${item.key}`)).toBeUndefined();
     }
   });

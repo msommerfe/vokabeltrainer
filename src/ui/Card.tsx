@@ -11,18 +11,22 @@ interface CardProps {
 }
 
 export function Card({ entry, direction, labels, onRate }: CardProps) {
-  const [revealed, setRevealed] = useState(false);
+  const [held, setHeld] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const revealed = held || pinned;
   const liveRegion = useRef<HTMLDivElement>(null);
 
   // Jede neue Karte startet verdeckt.
   useEffect(() => {
-    setRevealed(false);
+    setHeld(false);
+    setPinned(false);
   }, [entry.key, direction]);
 
   const { dragX, handlers } = useCardGestures({
     onRate,
-    onReveal: () => {
-      setRevealed(true);
+    onHold: setHeld,
+    onPin: () => {
+      setPinned(true);
     },
   });
 
@@ -67,7 +71,7 @@ export function Card({ entry, direction, labels, onRate }: CardProps) {
             ) : null}
           </div>
         ) : (
-          <p className="card-hint">Lange drücken oder doppelt tippen zum Aufdecken</p>
+          <p className="card-hint">Berühren zum Anzeigen, doppelt tippen zum Festhalten</p>
         )}
       </div>
 
