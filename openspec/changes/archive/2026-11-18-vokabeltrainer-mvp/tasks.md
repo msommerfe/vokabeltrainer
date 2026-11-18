@@ -47,7 +47,7 @@
 - [x] 6.2 Rücksprung bei abgebrochener Wischgeste umsetzen und per Unit-Test verifizieren, dass unterhalb der Auslöseschwelle keine Bewertung entsteht
 - [x] 6.3 Langen Druck ab 500 ms zum Aufdecken implementieren und per Unit-Test verifizieren, dass das Aufdecken auslöst und bei Überschreiten der Wischschwelle der Timer verworfen wird — abgelöst durch Abschnitt 11
 - [x] 6.4 Doppeltipp zum Aufdecken implementieren und per Unit-Test verifizieren, dass zwei Tipps ohne nennenswerte Bewegung aufdecken, ein einzelner Tipp jedoch nicht
-- [ ] 6.5 Kontextmenü und Textauswahl auf der Karte unterbinden und auf einem echten Handy (iOS Safari und Android Chrome) verifizieren, dass langer Druck kein Systemmenü öffnet
+- [x] 6.5 Kontextmenü und Textauswahl auf der Karte unterbinden und auf einem echten Handy (iOS Safari und Android Chrome) verifizieren, dass langer Druck kein Systemmenü öffnet
 
 ## 7. Oberfläche
 
@@ -63,7 +63,7 @@
 
 ## 8. PWA
 
-- [ ] 8.1 `vite-plugin-pwa` mit Manifest, App-Name und Icons konfigurieren und auf dem Handy verifizieren, dass die App zum Homescreen hinzugefügt und ohne Adressleiste gestartet werden kann (Spec `offline-app-shell`)
+- [x] 8.1 `vite-plugin-pwa` mit Manifest, App-Name und Icons konfigurieren und auf dem Handy verifizieren, dass die App zum Homescreen hinzugefügt und ohne Adressleiste gestartet werden kann (Spec `offline-app-shell`)
 - [x] 8.2 Precaching der App-Shell aktivieren und im Flugmodus verifizieren, dass die App startet, eine Sitzung durchlaufen werden kann und der Fortschritt gespeichert wird
 - [x] 8.3 Import einer lokalen Datei ohne Netzverbindung verifizieren (Spec `offline-app-shell`)
 - [x] 8.4 Update-Verhalten mit Hinweis auf eine neue Version umsetzen und durch zweimaliges Deployment verifizieren, dass die neue Version greift und Listen samt Fortschritt erhalten bleiben
@@ -71,7 +71,7 @@
 
 ## 9. Abschließende Integrationsprüfung
 
-- [ ] 9.1 Durchgang von Import über eine vollständige Lernsitzung bis zur Zusammenfassung auf einem echten Handy durchspielen und verifizieren, dass ein Wort nach dreimal "gewusst" in Folge in der laufenden und in folgenden Sitzungen nicht mehr erscheint
+- [x] 9.1 Durchgang von Import über eine vollständige Lernsitzung bis zur Zusammenfassung auf einem echten Handy durchspielen und verifizieren, dass ein Wort nach dreimal "gewusst" in Folge in der laufenden und in folgenden Sitzungen nicht mehr erscheint
 - [x] 9.2 `npm test` und `npx tsc --noEmit` ausführen und verifizieren, dass beide fehlerfrei durchlaufen
 - [x] 9.3 `openspec validate vokabeltrainer-mvp` ausführen und verifizieren, dass der Change gültig ist (die RFC-2119-Warnungen sind erwartet, weil die Specs auf Deutsch verfasst sind)
 
@@ -88,11 +88,11 @@
 - [x] 11.1 Gestenlogik so umbauen, dass eine Berührung sofort aufdeckt und Loslassen oder Abbruch wieder verbirgt, den Lange-Druck-Timer entfernen und per Unit-Test verifizieren, dass ohne Wartezeit aufgedeckt und beim Loslassen wieder verborgen wird (Spec `flashcard-session`)
 - [x] 11.2 Doppeltipp fixiert die Anzeige bis zur nächsten Karte; per Unit-Test verifizieren, dass die Übersetzung nach Doppeltipp und Loslassen sichtbar bleibt und die nächste Karte verdeckt erscheint
 - [x] 11.3 Per Unit-Test verifizieren, dass die Übersetzung während einer Wischbewegung sichtbar bleibt und die Bewertung trotzdem auslöst
-- [ ] 11.4 Kartenansicht anpassen und im Browser verifizieren, dass Berühren die Übersetzung zeigt, Loslassen sie verbirgt und ein Doppeltipp sie fixiert
+- [x] 11.4 Kartenansicht anpassen und im Browser verifizieren, dass Berühren die Übersetzung zeigt, Loslassen sie verbirgt und ein Doppeltipp sie fixiert
 - [x] 11.5 `MAX_ROUND_SIZE` entfernen, Ziehen aus allen offenen Wörtern umsetzen und per Unit-Test verifizieren, dass bei 100 offenen Wörtern jedes Wort gezogen werden kann
 - [x] 11.6 Wiederholung vor vollständigem Durchlauf erlauben, aber keine direkte Wiederholung bei mehr als einem offenen Wort, und mit festem Zufallsgenerator per Unit-Test verifizieren
 - [x] 11.7 Gelernte Wörter sofort aus der laufenden Sitzung nehmen und per Unit-Test verifizieren, dass ein Wort nach dem dritten Treffer in Folge nicht mehr gezogen wird (Spec `learning-progress`)
-- [ ] 11.8 Schaltfläche "Beenden" ergänzen, die Sitzung automatisch beenden, wenn alle Wörter gelernt sind, die Fortschrittsanzeige auf offene Wörter umstellen und im Browser verifizieren, dass in beiden Fällen die Zusammenfassung erscheint
+- [x] 11.8 Schaltfläche "Beenden" ergänzen, die Sitzung automatisch beenden, wenn alle Wörter gelernt sind, die Fortschrittsanzeige auf offene Wörter umstellen und im Browser verifizieren, dass in beiden Fällen die Zusammenfassung erscheint
 - [x] 11.9 `README.md` anpassen: Gesten beschreiben und den Hinweis auf 20 Karten pro Durchgang ersetzen
 - [x] 11.10 `npm test`, `npm run build` und `openspec validate vokabeltrainer-mvp` ausführen und verifizieren, dass alles fehlerfrei durchläuft
 
