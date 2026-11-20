@@ -47,7 +47,7 @@
 
 ## 7. Abschließende Integrationsprüfung
 
-- [ ] 7.1 Auf einem echten Handy eine bestehende Installation aktualisieren und verifizieren, dass die Übungen erscheinen, Lückentexte per Berühren aufgedeckt und per Wischen bewertet werden, Auswahlfragen per Antippen ausgewertet werden und Vokabelfortschritt erhalten bleibt
+- [x] 7.1 Auf einem echten Handy eine bestehende Installation aktualisieren und verifizieren, dass die Übungen erscheinen, Lückentexte per Berühren aufgedeckt und per Wischen bewertet werden, Auswahlfragen per Antippen ausgewertet werden und Vokabelfortschritt erhalten bleibt
 - [x] 7.2 `npm test`, `npm run build` und `openspec validate adds-exercises` ausführen und verifizieren, dass alles fehlerfrei durchläuft
 
 ## Workflow follow-up
