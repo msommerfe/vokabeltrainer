@@ -1,6 +1,6 @@
 import { pruneExerciseProgress } from '../domain/exercises';
 import { pruneProgressToEntries, rebaseProgressToList } from '../domain/progress';
-import type { VocabList } from '../domain/types';
+import type { ExerciseProgressRecord, VocabList } from '../domain/types';
 import type { VocabStore } from './types';
 
 /** Entfernt eine Liste zusammen mit ihrem gesamten Lern- und Übungsfortschritt. */
@@ -33,4 +33,18 @@ export async function replaceList(
 /** Ergänzt Felder, die in früher gespeicherten Listen fehlen. */
 export function normalizeStoredList(list: VocabList): VocabList {
   return Array.isArray(list.exercises) ? list : { ...list, exercises: [] };
+}
+
+/** Rechnet frühere Datensätze mit `solved` statt `streak` um. */
+export function normalizeExerciseRecord(record: ExerciseProgressRecord): ExerciseProgressRecord {
+  if (typeof record.streak === 'number') {
+    return record;
+  }
+  const legacy = record as Partial<ExerciseProgressRecord> & { solved?: unknown };
+  return {
+    listId: record.listId,
+    exerciseKey: record.exerciseKey,
+    streak: legacy.solved === true ? 1 : 0,
+    updatedAt: record.updatedAt,
+  };
 }

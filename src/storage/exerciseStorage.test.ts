@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { deriveChoiceKey } from '../domain/entryKey';
+import { indexExerciseProgress, isSolved } from '../domain/exercises';
 import type {
   Exercise,
   ExerciseProgressRecord,
@@ -35,7 +36,7 @@ function makeList(id: string, exercises: Exercise[]): VocabList {
 }
 
 function solved(listId: string, exerciseKey: string): ExerciseProgressRecord {
-  return { listId, exerciseKey, solved: true, updatedAt: 1 };
+  return { listId, exerciseKey, streak: 1, updatedAt: 1 };
 }
 
 const vocabRecord: ProgressRecord = {
@@ -50,7 +51,7 @@ const vocabRecord: ProgressRecord = {
 describe('Übungsfortschritt im Speicher', () => {
   it('liefert beim Lesen denselben Datensatz zurück und überschreibt statt zu duplizieren', async () => {
     const store = createMemoryStore();
-    const record = { ...solved('l1', 'k'), solved: false };
+    const record = { ...solved('l1', 'k'), streak: 0 };
 
     await store.saveExerciseProgress(record);
     expect(await store.listExerciseProgress('l1')).toEqual([record]);
@@ -116,6 +117,25 @@ describe('replaceList', () => {
     expect(await store.listProgress('neu')).toHaveLength(1);
     expect(await store.listExerciseProgress('alt')).toEqual([]);
     expect((await store.listLists()).map((list) => list.id)).toEqual(['neu']);
+  });
+});
+
+describe('früher gespeicherter Übungsfortschritt', () => {
+  it('rechnet "gelöst" in Zähler 1 um, sodass die Übung bei Schwelle 1 gelöst bleibt', async () => {
+    const store = createMemoryStore();
+    const legacy = { listId: 'l1', exerciseKey: 'alt', solved: true, updatedAt: 1 };
+    const legacyOpen = { listId: 'l1', exerciseKey: 'offen', solved: false, updatedAt: 1 };
+    await store.putExerciseProgressBatch([
+      legacy as unknown as ExerciseProgressRecord,
+      legacyOpen as unknown as ExerciseProgressRecord,
+    ]);
+
+    const records = await store.listExerciseProgress('l1');
+    const index = indexExerciseProgress(records);
+
+    expect(records.map((record) => record.streak)).toEqual([1, 0]);
+    expect(isSolved(index, 'l1', 'alt', 1)).toBe(true);
+    expect(isSolved(index, 'l1', 'offen', 1)).toBe(false);
   });
 });
 

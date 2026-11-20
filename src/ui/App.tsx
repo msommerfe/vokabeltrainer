@@ -1,24 +1,30 @@
 import { useState } from 'react';
 import { useAppUpdate } from '../app/useAppUpdate';
 import { useLibrary } from '../app/useLibrary';
+import { useSettings } from '../app/useSettings';
 import type { SessionTally } from '../domain/session';
 import type { Direction } from '../domain/types';
 import { ExerciseSessionView } from './ExerciseSessionView';
 import { ImportView } from './ImportView';
 import { LibraryView } from './LibraryView';
 import { SessionView } from './SessionView';
+import { SettingsView } from './SettingsView';
 import { EXERCISE_SUMMARY, SummaryView, VOCAB_SUMMARY } from './SummaryView';
+import { VocabularyOverview } from './VocabularyOverview';
 import './app.css';
 
 type Screen =
   | { name: 'library' }
   | { name: 'import' }
+  | { name: 'settings' }
+  | { name: 'overview'; listId: string }
   | { name: 'session'; listId: string; direction: Direction }
   | { name: 'exercises'; listId: string }
   | { name: 'summary'; listId: string; tally: SessionTally; again: Screen };
 
 export function App() {
   const library = useLibrary();
+  const [settings, setSettings] = useSettings();
   const { updateReady, applyUpdate } = useAppUpdate();
   const [screen, setScreen] = useState<Screen>({ name: 'library' });
 
@@ -27,7 +33,10 @@ export function App() {
   };
 
   const activeList =
-    screen.name === 'session' || screen.name === 'exercises' || screen.name === 'summary'
+    screen.name === 'session' ||
+    screen.name === 'exercises' ||
+    screen.name === 'summary' ||
+    screen.name === 'overview'
       ? library.lists.find((list) => list.id === screen.listId)
       : undefined;
 
@@ -60,13 +69,29 @@ export function App() {
           onImport={library.importOutcome}
           onDone={toLibrary}
         />
+      ) : screen.name === 'settings' ? (
+        <SettingsView settings={settings} onChange={setSettings} onDone={toLibrary} />
+      ) : screen.name === 'overview' && activeList !== undefined ? (
+        <VocabularyOverview
+          list={activeList}
+          progress={library.progress}
+          threshold={settings.vocab.threshold}
+          onDone={toLibrary}
+        />
       ) : screen.name === 'session' && activeList !== undefined ? (
         <SessionView
           list={activeList}
           direction={screen.direction}
           progress={library.progress}
+          settings={settings.vocab}
           onRate={(entryKey, rating) =>
-            library.rate(activeList.id, entryKey, screen.direction, rating)
+            library.rate(
+              activeList.id,
+              entryKey,
+              screen.direction,
+              rating,
+              settings.vocab.threshold,
+            )
           }
           onFinish={(tally) => {
             setScreen({ name: 'summary', listId: activeList.id, tally, again: screen });
@@ -80,8 +105,14 @@ export function App() {
         <ExerciseSessionView
           list={activeList}
           progress={library.exerciseProgress}
+          settings={settings.exercises}
           onAnswer={(exerciseKey, correct) =>
-            library.answerExercise(activeList.id, exerciseKey, correct)
+            library.answerExercise(
+              activeList.id,
+              exerciseKey,
+              correct,
+              settings.exercises.threshold,
+            )
           }
           onFinish={(tally) => {
             setScreen({ name: 'summary', listId: activeList.id, tally, again: screen });
@@ -105,11 +136,18 @@ export function App() {
           lists={library.lists}
           progress={library.progress}
           exerciseProgress={library.exerciseProgress}
+          settings={settings}
           onStart={(listId, direction) => {
             setScreen({ name: 'session', listId, direction });
           }}
           onStartExercises={(listId) => {
             setScreen({ name: 'exercises', listId });
+          }}
+          onShowOverview={(listId) => {
+            setScreen({ name: 'overview', listId });
+          }}
+          onOpenSettings={() => {
+            setScreen({ name: 'settings' });
           }}
           onImport={() => {
             setScreen({ name: 'import' });

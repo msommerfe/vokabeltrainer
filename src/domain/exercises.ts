@@ -12,11 +12,16 @@ export function indexExerciseProgress(
   );
 }
 
-export function isSolved(index: ExerciseProgressIndex, listId: string, exerciseKey: string): boolean {
-  return index.get(exerciseProgressKey(listId, exerciseKey))?.solved ?? false;
+export function isSolved(
+  index: ExerciseProgressIndex,
+  listId: string,
+  exerciseKey: string,
+  threshold: number,
+): boolean {
+  return (index.get(exerciseProgressKey(listId, exerciseKey))?.streak ?? 0) >= threshold;
 }
 
-/** Eine richtige Antwort löst die Übung; eine falsche lässt sie offen. */
+/** Eine richtige Antwort erhöht den Zähler, eine falsche setzt ihn auf null. */
 export function applyExerciseResult(
   previous: ExerciseProgressRecord | undefined,
   correct: boolean,
@@ -25,7 +30,7 @@ export function applyExerciseResult(
   return {
     listId: context.listId,
     exerciseKey: context.exerciseKey,
-    solved: correct || (previous?.solved ?? false),
+    streak: correct ? (previous?.streak ?? 0) + 1 : 0,
     updatedAt: context.now,
   };
 }
@@ -34,8 +39,9 @@ export function openExercises(
   exercises: readonly Exercise[],
   index: ExerciseProgressIndex,
   listId: string,
+  threshold: number,
 ): Exercise[] {
-  return exercises.filter((exercise) => !isSolved(index, listId, exercise.key));
+  return exercises.filter((exercise) => !isSolved(index, listId, exercise.key, threshold));
 }
 
 export interface ExerciseSummary {
@@ -48,8 +54,9 @@ export function summarizeExercises(
   exercises: readonly Exercise[],
   index: ExerciseProgressIndex,
   listId: string,
+  threshold: number,
 ): ExerciseSummary {
-  const open = openExercises(exercises, index, listId).length;
+  const open = openExercises(exercises, index, listId, threshold).length;
   return { solved: exercises.length - open, open, total: exercises.length };
 }
 

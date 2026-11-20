@@ -16,7 +16,7 @@ describe('abgebrochene Sitzung', () => {
     const entries = Array.from({ length: 100 }, (_, index) => entry(index));
     const store = createMemoryStore();
 
-    const open = openEntries(entries, indexProgress([]), LIST, DIRECTION);
+    const open = openEntries(entries, indexProgress([]), LIST, DIRECTION, 3);
     expect(open).toHaveLength(100);
 
     // Nur 7 Wörter bewerten, dann die Sitzung verlassen.
@@ -70,7 +70,7 @@ describe('abgebrochene Sitzung', () => {
     const entries = Array.from({ length: 30 }, (_, index) => entry(index));
     const store = createMemoryStore();
 
-    const open = openEntries(entries, indexProgress([]), LIST, DIRECTION);
+    const open = openEntries(entries, indexProgress([]), LIST, DIRECTION, 3);
     const first = drawNext(open);
     if (first === undefined) {
       throw new Error('keine offene Karte');

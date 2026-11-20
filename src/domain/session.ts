@@ -7,8 +7,31 @@ export function openEntries(
   index: ProgressIndex,
   listId: string,
   direction: Direction,
+  threshold: number,
 ): VocabEntry[] {
-  return entries.filter((entry) => !isLearned(index, listId, entry.key, direction));
+  return entries.filter((entry) => !isLearned(index, listId, entry.key, direction, threshold));
+}
+
+/** Wählt für eine Sitzung höchstens `size` zufällige Elemente; `null` bedeutet alle. */
+export function pickSession<T>(
+  open: readonly T[],
+  size: number | null,
+  random: () => number = Math.random,
+): T[] {
+  if (size === null || open.length <= size) {
+    return [...open];
+  }
+  const pool = [...open];
+  for (let index = 0; index < size; index += 1) {
+    const swapWith = index + Math.floor(random() * (pool.length - index));
+    const chosen = pool[swapWith];
+    const current = pool[index];
+    if (chosen !== undefined && current !== undefined) {
+      pool[index] = chosen;
+      pool[swapWith] = current;
+    }
+  }
+  return pool.slice(0, size);
 }
 
 /**

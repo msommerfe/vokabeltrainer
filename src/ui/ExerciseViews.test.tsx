@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { DEFAULT_SETTINGS } from '../domain/settings';
 import type { ChoiceExercise, Exercise, GapExercise, VocabList } from '../domain/types';
 import { ChoiceCard, GapCard } from './ExerciseCards';
 import { ExerciseSessionView } from './ExerciseSessionView';
@@ -72,9 +73,12 @@ describe('LibraryView mit Übungen', () => {
         lists={lists}
         progress={new Map()}
         exerciseProgress={new Map([
-          ['l1::exercise::' + gap.key, { listId: 'l1', exerciseKey: gap.key, solved: true, updatedAt: 0 }],
+          ['l1::exercise::' + gap.key, { listId: 'l1', exerciseKey: gap.key, streak: 1, updatedAt: 0 }],
         ])}
+        settings={DEFAULT_SETTINGS}
         onStart={vi.fn()}
+        onShowOverview={vi.fn()}
+        onOpenSettings={vi.fn()}
         onImport={vi.fn()}
         onDelete={vi.fn()}
         {...handlers}
@@ -94,13 +98,24 @@ describe('LibraryView mit Übungen', () => {
 
   it('zeigt bei einer Liste ohne Übungen weder Kachel noch Zurücksetzen der Übungen', () => {
     renderLibrary([makeList([])]);
+    fireEvent.click(screen.getByRole('button', { name: 'Weitere Aktionen für Verben' }));
 
     expect(screen.queryByText('Übungen')).toBeNull();
     expect(screen.queryByText('Übungen zurücksetzen')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Vokabeln zurücksetzen' })).not.toBeNull();
+  });
+
+  it('blendet die selteneren Aktionen erst über "⋯" ein', () => {
+    renderLibrary([makeList([gap])]);
+
+    expect(screen.queryByRole('button', { name: 'Liste löschen' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Weitere Aktionen für Verben' }));
+    expect(screen.getByRole('button', { name: 'Liste löschen' })).not.toBeNull();
   });
 
   it('setzt die Übungen nur nach Bestätigung zurück', () => {
     const { onResetExercises, onReset } = renderLibrary([makeList([gap])]);
+    fireEvent.click(screen.getByRole('button', { name: 'Weitere Aktionen für Verben' }));
 
     fireEvent.click(screen.getByRole('button', { name: 'Übungen zurücksetzen' }));
     fireEvent.click(screen.getByRole('button', { name: 'Abbrechen' }));
@@ -203,6 +218,7 @@ describe('ExerciseSessionView', () => {
       <ExerciseSessionView
         list={makeList(exercises)}
         progress={new Map()}
+        settings={DEFAULT_SETTINGS.exercises}
         onAnswer={onAnswer}
         onFinish={onFinish}
         onLeave={vi.fn()}
@@ -252,8 +268,9 @@ describe('ExerciseSessionView', () => {
       <ExerciseSessionView
         list={makeList([gap])}
         progress={new Map([
-          ['l1::exercise::' + gap.key, { listId: 'l1', exerciseKey: gap.key, solved: true, updatedAt: 0 }],
+          ['l1::exercise::' + gap.key, { listId: 'l1', exerciseKey: gap.key, streak: 1, updatedAt: 0 }],
         ])}
+        settings={DEFAULT_SETTINGS.exercises}
         onAnswer={vi.fn()}
         onFinish={vi.fn()}
         onLeave={vi.fn()}
@@ -271,6 +288,7 @@ describe('ExerciseSessionView', () => {
       <ExerciseSessionView
         list={makeList([gap, question])}
         progress={new Map()}
+        settings={DEFAULT_SETTINGS.exercises}
         onAnswer={vi.fn()}
         onFinish={onFinish}
         onLeave={vi.fn()}

@@ -71,16 +71,13 @@ export interface ProgressRecord {
 /** Bewertung einer Karte durch den Nutzer. */
 export type Rating = 'known' | 'unknown';
 
-/** Ob eine Übung einer Liste bereits einmal richtig gelöst wurde. */
+/** Wie oft eine Übung einer Liste zuletzt in Folge richtig beantwortet wurde. */
 export interface ExerciseProgressRecord {
   listId: string;
   exerciseKey: string;
-  solved: boolean;
+  streak: number;
   updatedAt: number;
 }
-
-/** Anzahl korrekter Antworten in Folge, ab der ein Wort als gelernt gilt. */
-export const LEARNED_THRESHOLD = 3;
 
 /** Gibt das abgefragte Wort (Vorderseite) für die Richtung zurück. */
 export function promptWord(entry: VocabEntry, direction: Direction): string {

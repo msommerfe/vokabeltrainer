@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { exerciseProgressKey, progressKey } from '../domain/entryKey';
 import { applyExerciseResult, indexExerciseProgress } from '../domain/exercises';
-import { applyRating, indexProgress } from '../domain/progress';
+import { applyRating, crossedThreshold, indexProgress } from '../domain/progress';
 import type {
   Direction,
   ExerciseProgressRecord,
@@ -51,11 +51,13 @@ export interface Library {
     entryKey: string,
     direction: Direction,
     rating: Rating,
+    threshold: number,
   ) => Promise<RateOutcome>;
   answerExercise: (
     listId: string,
     exerciseKey: string,
     correct: boolean,
+    threshold: number,
   ) => Promise<ExerciseOutcome>;
   resetList: (listId: string) => Promise<void>;
   resetExercises: (listId: string) => Promise<void>;
@@ -185,15 +187,16 @@ export function useLibrary(): Library {
       entryKey: string,
       direction: Direction,
       rating: Rating,
+      threshold: number,
     ): Promise<RateOutcome> => {
       const key = progressKey(listId, entryKey, direction);
       const previous = progressRef.current.get(key);
-      const next = applyRating(previous, rating, {
-        listId,
-        entryKey,
-        direction,
-        now: Date.now(),
-      });
+      const next = applyRating(
+        previous,
+        rating,
+        { listId, entryKey, direction, now: Date.now() },
+        threshold,
+      );
 
       const updated = new Map(progressRef.current).set(key, next);
       progressRef.current = updated;
@@ -202,13 +205,18 @@ export function useLibrary(): Library {
       // Sofort schreiben, damit der Stand auch beim vorzeitigen Verlassen erhalten bleibt.
       await store.saveProgress(next);
 
-      return { newlyLearned: next.learned && previous?.learned !== true };
+      return { newlyLearned: crossedThreshold(previous?.streak ?? 0, next.streak, threshold) };
     },
     [store],
   );
 
   const answerExercise = useCallback(
-    async (listId: string, exerciseKey: string, correct: boolean): Promise<ExerciseOutcome> => {
+    async (
+      listId: string,
+      exerciseKey: string,
+      correct: boolean,
+      threshold: number,
+    ): Promise<ExerciseOutcome> => {
       const key = exerciseProgressKey(listId, exerciseKey);
       const previous = exerciseProgressRef.current.get(key);
       const next = applyExerciseResult(previous, correct, { listId, exerciseKey, now: Date.now() });
@@ -219,7 +227,7 @@ export function useLibrary(): Library {
 
       await store.saveExerciseProgress(next);
 
-      return { newlySolved: next.solved && previous?.solved !== true };
+      return { newlySolved: crossedThreshold(previous?.streak ?? 0, next.streak, threshold) };
     },
     [store],
   );

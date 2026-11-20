@@ -68,8 +68,8 @@ describe('Trennung je Richtung', () => {
   it('lässt ein in A→B gelerntes Wort in B→A offen', () => {
     const index = indexProgress([record('haus|house', 'a-to-b', 3, true)]);
 
-    expect(isLearned(index, LIST, 'haus|house', 'a-to-b')).toBe(true);
-    expect(isLearned(index, LIST, 'haus|house', 'b-to-a')).toBe(false);
+    expect(isLearned(index, LIST, 'haus|house', 'a-to-b', 3)).toBe(true);
+    expect(isLearned(index, LIST, 'haus|house', 'b-to-a', 3)).toBe(false);
     expect(streakOf(index, LIST, 'haus|house', 'b-to-a')).toBe(0);
   });
 
@@ -90,7 +90,7 @@ describe('openEntries', () => {
   it('lässt gelernte Wörter weg', () => {
     const index = indexProgress([record(entries[0]!.key, 'a-to-b', 3, true)]);
 
-    const open = openEntries(entries, index, LIST, 'a-to-b');
+    const open = openEntries(entries, index, LIST, 'a-to-b', 3);
 
     expect(open.map((item) => item.key)).not.toContain(entries[0]!.key);
     expect(open).toHaveLength(2);
@@ -99,14 +99,14 @@ describe('openEntries', () => {
   it('nimmt gelernte Wörter nur in der betroffenen Richtung heraus', () => {
     const index = indexProgress([record(entries[0]!.key, 'a-to-b', 3, true)]);
 
-    expect(openEntries(entries, index, LIST, 'a-to-b')).toHaveLength(2);
-    expect(openEntries(entries, index, LIST, 'b-to-a')).toHaveLength(3);
+    expect(openEntries(entries, index, LIST, 'a-to-b', 3)).toHaveLength(2);
+    expect(openEntries(entries, index, LIST, 'b-to-a', 3)).toHaveLength(3);
   });
 
   it('ist leer, wenn alle Wörter gelernt sind', () => {
     const index = indexProgress(entries.map((item) => record(item.key, 'a-to-b', 3, true)));
 
-    expect(openEntries(entries, index, LIST, 'a-to-b')).toEqual([]);
+    expect(openEntries(entries, index, LIST, 'a-to-b', 3)).toEqual([]);
   });
 });
 
@@ -159,7 +159,7 @@ describe('drawNext', () => {
     for (let hit = 0; hit < 3; hit += 1) {
       current = applyRating(current, 'known', { ...context, entryKey: target.key });
     }
-    const open = openEntries(three, indexProgress(current ? [current] : []), LIST, 'a-to-b');
+    const open = openEntries(three, indexProgress(current ? [current] : []), LIST, 'a-to-b', 3);
 
     for (const value of [0, 0.3, 0.6, 0.999]) {
       expect(drawNext(open, undefined, () => value)?.key).not.toBe(target.key);
@@ -172,7 +172,7 @@ describe('summarizeProgress', () => {
     const entries = Array.from({ length: 100 }, (_, index) => entry(`Wort${index}`, `word${index}`));
     const learned = entries.slice(0, 40).map((item) => record(item.key, 'a-to-b', 3, true));
 
-    const summary = summarizeProgress(entries, indexProgress(learned), LIST, 'a-to-b');
+    const summary = summarizeProgress(entries, indexProgress(learned), LIST, 'a-to-b', 3);
 
     expect(summary).toEqual({ learned: 40, open: 60, total: 100 });
   });
@@ -181,7 +181,7 @@ describe('summarizeProgress', () => {
     const entries = [entry('Haus', 'house')];
     const index = indexProgress([record(entries[0]!.key, 'a-to-b', 3, true)]);
 
-    expect(summarizeProgress(entries, index, LIST, 'b-to-a')).toEqual({
+    expect(summarizeProgress(entries, index, LIST, 'b-to-a', 3)).toEqual({
       learned: 0,
       open: 1,
       total: 1,
@@ -200,9 +200,9 @@ describe('Fortschritt zurücksetzen', () => {
 
     for (const item of entries) {
       expect(streakOf(index, LIST, item.key, 'a-to-b')).toBe(0);
-      expect(isLearned(index, LIST, item.key, 'a-to-b')).toBe(false);
+      expect(isLearned(index, LIST, item.key, 'a-to-b', 3)).toBe(false);
     }
-    expect(summarizeProgress(entries, index, LIST, 'a-to-b')).toEqual({
+    expect(summarizeProgress(entries, index, LIST, 'a-to-b', 3)).toEqual({
       learned: 0,
       open: 2,
       total: 2,

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { DEFAULT_SETTINGS } from '../domain/settings';
 import type { VocabList } from '../domain/types';
 import { GESTURE } from './gestures/gestureMachine';
 import { SessionView } from './SessionView';
@@ -35,6 +36,7 @@ function renderSession(onRate = vi.fn(() => Promise.resolve({ newlyLearned: true
       list={list}
       direction="a-to-b"
       progress={new Map()}
+      settings={DEFAULT_SETTINGS.vocab}
       onRate={onRate}
       onFinish={onFinish}
       onLeave={vi.fn()}

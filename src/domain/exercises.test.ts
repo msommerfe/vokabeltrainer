@@ -3,6 +3,7 @@ import { deriveChoiceKey, deriveGapKey } from './entryKey';
 import {
   applyExerciseResult,
   indexExerciseProgress,
+  isSolved,
   openExercises,
   summarizeExercises,
 } from './exercises';
@@ -28,7 +29,7 @@ function choice(index: number): Exercise {
 }
 
 function solved(exerciseKey: string): ExerciseProgressRecord {
-  return { listId: LIST, exerciseKey, solved: true, updatedAt: 0 };
+  return { listId: LIST, exerciseKey, streak: 1, updatedAt: 0 };
 }
 
 describe('Übungsschlüssel', () => {
@@ -66,15 +67,24 @@ describe('Übungsschlüssel', () => {
 describe('applyExerciseResult', () => {
   const context = { listId: LIST, exerciseKey: 'k', now: 1 };
 
-  it('löst eine Übung nach einer richtigen Antwort', () => {
-    expect(applyExerciseResult(undefined, true, context).solved).toBe(true);
+  it('erhöht den Zähler bei einer richtigen Antwort', () => {
+    const first = applyExerciseResult(undefined, true, context);
+
+    expect(first.streak).toBe(1);
+    expect(applyExerciseResult(first, true, context).streak).toBe(2);
   });
 
-  it('markiert eine Übung bei falscher Antwort nie als gelöst', () => {
-    expect(applyExerciseResult(undefined, false, context).solved).toBe(false);
-    expect(
-      applyExerciseResult({ ...solved('k'), solved: false }, false, context).solved,
-    ).toBe(false);
+  it('setzt den Zähler bei falscher Antwort auf 0', () => {
+    expect(applyExerciseResult(undefined, false, context).streak).toBe(0);
+    expect(applyExerciseResult({ ...solved('k'), streak: 2 }, false, context).streak).toBe(0);
+  });
+
+  it('löst eine Übung bei Schwelle 2 erst nach zwei richtigen Antworten in Folge', () => {
+    const first = applyExerciseResult(undefined, true, context);
+    const second = applyExerciseResult(first, true, context);
+
+    expect(isSolved(indexExerciseProgress([first]), LIST, 'k', 2)).toBe(false);
+    expect(isSolved(indexExerciseProgress([second]), LIST, 'k', 2)).toBe(true);
   });
 });
 
@@ -84,13 +94,13 @@ describe('Übungsübersicht', () => {
   it('weist bei 12 Übungen mit 4 gelösten 4 gelöste und 8 offene aus', () => {
     const index = indexExerciseProgress(twelve.slice(0, 4).map((item) => solved(item.key)));
 
-    expect(summarizeExercises(twelve, index, LIST)).toEqual({ solved: 4, open: 8, total: 12 });
+    expect(summarizeExercises(twelve, index, LIST, 1)).toEqual({ solved: 4, open: 8, total: 12 });
   });
 
   it('lässt gelöste Übungen bei den offenen weg', () => {
     const index = indexExerciseProgress([solved(twelve[0]!.key)]);
 
-    expect(openExercises(twelve, index, LIST).map((item) => item.key)).not.toContain(
+    expect(openExercises(twelve, index, LIST, 1).map((item) => item.key)).not.toContain(
       twelve[0]!.key,
     );
   });
@@ -98,7 +108,7 @@ describe('Übungsübersicht', () => {
   it('zählt Fortschritt anderer Listen nicht mit', () => {
     const index = indexExerciseProgress([{ ...solved(twelve[0]!.key), listId: 'andere' }]);
 
-    expect(summarizeExercises(twelve, index, LIST).solved).toBe(0);
+    expect(summarizeExercises(twelve, index, LIST, 1).solved).toBe(0);
   });
 });
 

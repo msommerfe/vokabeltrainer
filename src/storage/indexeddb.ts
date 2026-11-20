@@ -1,7 +1,7 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import { exerciseProgressKey, progressKey } from '../domain/entryKey';
 import type { ExerciseProgressRecord, ProgressRecord, VocabList } from '../domain/types';
-import { normalizeStoredList } from './operations';
+import { normalizeExerciseRecord, normalizeStoredList } from './operations';
 import { StorageUnavailableError, type VocabStore } from './types';
 
 const DB_NAME = 'vokabeltrainer';
@@ -98,7 +98,8 @@ export function createIndexedDbStore(): VocabStore {
       await tx.done;
     },
     async listExerciseProgress(listId) {
-      return (await db()).getAllFromIndex('exerciseProgress', 'byList', listId);
+      const records = await (await db()).getAllFromIndex('exerciseProgress', 'byList', listId);
+      return records.map(normalizeExerciseRecord);
     },
     async saveExerciseProgress(record) {
       await (await db()).put('exerciseProgress', record, exerciseKeyOf(record));

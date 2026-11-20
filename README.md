@@ -6,12 +6,25 @@ Karteikarten-Trainer für eigene Vokabellisten. Installierbare PWA, offline nutz
 - Swipe nach **links** = Wort nicht gewusst
 - **Berühren** zeigt die Übersetzung samt Beispielen, solange der Finger auf der Karte liegt
 - **Doppeltipp** hält die Übersetzung bis zur nächsten Karte sichtbar
-- Ein Wort gilt nach **3× in Folge gewusst** als gelernt und fällt sofort aus der Abfrage
-- Eine Sitzung umfasst **alle offenen Wörter**. Die Karten werden zufällig gezogen; ein Wort kann wiederkommen, bevor alle anderen dran waren, aber nicht direkt hintereinander
+- Ein Wort gilt nach **3× in Folge gewusst** als gelernt (einstellbar) und fällt sofort aus der Abfrage
+- Eine Sitzung umfasst **alle offenen Wörter** oder die eingestellte Anzahl zufällig gewählter. Die Karten werden zufällig gezogen; ein Wort kann wiederkommen, bevor alle anderen dran waren, aber nicht direkt hintereinander
 - Die Sitzung läuft, bis alle Wörter gelernt sind oder sie mit **Beenden** abgeschlossen wird
+- **Zurück** zeigt bereits gewischte Karten der laufenden Sitzung nochmals an, aufgedeckt und mit ihrer Bewertung. Die Bewertung bleibt dabei unverändert, **Weiter** führt zur aktuellen Karte zurück
 - Jede Bewertung wird sofort gespeichert — ein Abbruch mitten in der Sitzung verliert nichts
 - Abfrage in beide Richtungen, Fortschritt je Richtung getrennt
-- Zusätzlich **Übungen** je Liste: Lückentexte (Berühren zeigt die Lösung, Wischen bewertet) und Auswahlfragen A/B/C (Antippen wertet sofort aus), jeweils mit kurzer Erklärung. Eine Übung gilt nach einmal richtig als gelöst
+- Zusätzlich **Übungen** je Liste: Lückentexte (Berühren zeigt die Lösung, Wischen bewertet) und Auswahlfragen A/B/C (Antippen wertet sofort aus), jeweils mit kurzer Erklärung. Eine Übung gilt standardmäßig nach einmal richtig als gelöst
+- **Alle Vokabeln** zeigt je Liste sämtliche Wortpaare in einer kompakten Tabelle, mit einem Häkchen je Richtung für gelernte Wörter
+
+### Einstellungen
+
+Über das Zahnrad ⚙ in der Listenübersicht lassen sich Vokabeln und Übungen getrennt einstellen:
+
+| Einstellung | Standard | Bedeutung |
+| --- | --- | --- |
+| Wörter bzw. Übungen pro Sitzung | alle (Feld leer) | So viele zufällig gewählte offene Wörter bzw. Übungen umfasst eine Sitzung |
+| Richtig in Folge bis gelernt bzw. gelöst | 3 bei Vokabeln, 1 bei Übungen | Erlaubt sind 1 bis 10. Eine falsche Antwort setzt den Zähler zurück |
+
+Eine geänderte Schwelle wirkt sofort auch auf den bisherigen Fortschritt. Wird sie gesenkt, gelten Wörter mit genügend Treffern sofort als gelernt. Wird sie erhöht, werden bereits gelernte Wörter wieder abgefragt. Die Einstellungen bleiben auf dem Gerät gespeichert.
 
 Alle Daten bleiben auf dem Gerät. Es gibt kein Backend und keine Übertragung an Dritte.
 
@@ -130,7 +143,7 @@ Eine JSON-Liste kann zusätzlich den optionalen Block `exercises` enthalten. Dan
 - **Lückentext** (`"type": "gap"`): Die fehlenden Wörter stehen in geschweiften Klammern im Satz. Mehrere Lücken sind möglich. In der App zeigt Berühren die Lösung und die Erklärung, Loslassen verbirgt sie, ein Doppeltipp hält sie fest. Die Bewertung erfolgt per Wischen.
 - **Auswahlfrage** (`"type": "choice"`): mindestens zwei `options`. `answer` muss genau einer Option entsprechen. Die Optionen erscheinen in der Reihenfolge der Datei als A, B, C … Nach dem Antippen zeigt die App sofort, ob die Antwort richtig war.
 - `explanation` ist optional und wird nach dem Aufdecken bzw. Beantworten angezeigt.
-- Eine Übung gilt nach **einmal richtig** als gelöst. Der Übungsfortschritt ist vom Vokabelfortschritt getrennt und lässt sich separat zurücksetzen.
+- Eine Übung gilt standardmäßig nach **einmal richtig** als gelöst; die Anzahl ist in den Einstellungen änderbar. Der Übungsfortschritt ist vom Vokabelfortschritt getrennt und lässt sich separat zurücksetzen.
 - Fehlerhafte Übungen werden übersprungen und als „Übung N“ gemeldet; die übrigen Inhalte werden trotzdem importiert. Beim erneuten Import bleibt der Fortschritt einer Übung erhalten, solange Satz bzw. Frage und richtige Antwort gleich bleiben. Eine geänderte Erklärung oder ausgetauschte falsche Antworten setzen ihn nicht zurück.
 - Übungen gibt es nur im JSON-Format, nicht im CSV-Import.
 

@@ -1,11 +1,6 @@
 import { progressKey } from './entryKey';
-import {
-  LEARNED_THRESHOLD,
-  type Direction,
-  type ProgressRecord,
-  type Rating,
-  type VocabEntry,
-} from './types';
+import { DEFAULT_SETTINGS } from './settings';
+import type { Direction, ProgressRecord, Rating, VocabEntry } from './types';
 
 /** Lernstand einer Liste, adressiert über `progressKey`. */
 export type ProgressIndex = ReadonlyMap<string, ProgressRecord>;
@@ -34,13 +29,24 @@ export function streakOf(
   return lookupProgress(index, listId, entryKey, direction)?.streak ?? 0;
 }
 
+/** Gelernt ergibt sich aus Zähler und aktueller Schwelle, damit Schwellenänderungen sofort wirken. */
 export function isLearned(
   index: ProgressIndex,
   listId: string,
   entryKey: string,
   direction: Direction,
+  threshold: number,
 ): boolean {
-  return lookupProgress(index, listId, entryKey, direction)?.learned ?? false;
+  return streakOf(index, listId, entryKey, direction) >= threshold;
+}
+
+/** Meldet, ob ein Zählerwechsel die Schwelle gerade erreicht hat. */
+export function crossedThreshold(
+  previousStreak: number,
+  nextStreak: number,
+  threshold: number,
+): boolean {
+  return previousStreak < threshold && nextStreak >= threshold;
 }
 
 /**
@@ -51,6 +57,7 @@ export function applyRating(
   previous: ProgressRecord | undefined,
   rating: Rating,
   context: { listId: string; entryKey: string; direction: Direction; now: number },
+  threshold: number = DEFAULT_SETTINGS.vocab.threshold,
 ): ProgressRecord {
   const streak = rating === 'known' ? (previous?.streak ?? 0) + 1 : 0;
 
@@ -59,7 +66,8 @@ export function applyRating(
     entryKey: context.entryKey,
     direction: context.direction,
     streak,
-    learned: streak >= LEARNED_THRESHOLD,
+    // Wird nicht mehr gelesen; bleibt für ältere App-Versionen erhalten.
+    learned: streak >= threshold,
     updatedAt: context.now,
   };
 }
@@ -76,10 +84,11 @@ export function summarizeProgress(
   index: ProgressIndex,
   listId: string,
   direction: Direction,
+  threshold: number,
 ): ProgressSummary {
   let learned = 0;
   for (const entry of entries) {
-    if (isLearned(index, listId, entry.key, direction)) {
+    if (isLearned(index, listId, entry.key, direction, threshold)) {
       learned += 1;
     }
   }

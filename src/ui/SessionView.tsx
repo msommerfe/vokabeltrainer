@@ -1,33 +1,58 @@
 import { useMemo, useRef, useState } from 'react';
-import { drawNext, emptyTally, openEntries, type SessionTally } from '../domain/session';
-import { directionLabels, type Direction, type VocabList } from '../domain/types';
+import type { StudySettings } from '../domain/settings';
+import {
+  drawNext,
+  emptyTally,
+  openEntries,
+  pickSession,
+  type SessionTally,
+} from '../domain/session';
+import { directionLabels, type Direction, type VocabEntry, type VocabList } from '../domain/types';
 import type { ProgressRecord, Rating } from '../domain/types';
-import { Card } from './Card';
+import { Card, ReviewCard } from './Card';
 
 interface SessionViewProps {
   list: VocabList;
   direction: Direction;
   progress: ReadonlyMap<string, ProgressRecord>;
+  settings: StudySettings;
   onRate: (entryKey: string, rating: Rating) => Promise<{ newlyLearned: boolean }>;
   onFinish: (tally: SessionTally) => void;
   onLeave: () => void;
   onReset: () => void;
 }
 
+interface Rated {
+  entry: VocabEntry;
+  rating: Rating;
+}
+
 export function SessionView({
   list,
   direction,
   progress,
+  settings,
   onRate,
   onFinish,
   onLeave,
   onReset,
 }: SessionViewProps) {
-  // Die offenen Wörter werden beim Betreten festgelegt; während der Sitzung
+  // Die Wörter der Sitzung werden beim Betreten festgelegt; während der Sitzung
   // fallen nur die hier neu gelernten heraus.
   const progressAtStart = useRef(progress);
+  const settingsAtStart = useRef(settings);
   const initialOpen = useMemo(
-    () => openEntries(list.entries, progressAtStart.current, list.id, direction),
+    () =>
+      pickSession(
+        openEntries(
+          list.entries,
+          progressAtStart.current,
+          list.id,
+          direction,
+          settingsAtStart.current.threshold,
+        ),
+        settingsAtStart.current.sessionSize,
+      ),
     [list.entries, list.id, direction],
   );
 
@@ -35,6 +60,9 @@ export function SessionView({
   const [draws, setDraws] = useState(0);
   const [learnedKeys, setLearnedKeys] = useState<ReadonlySet<string>>(() => new Set());
   const [tally, setTally] = useState<SessionTally>(emptyTally);
+  const [history, setHistory] = useState<readonly Rated[]>([]);
+  // Index der angezeigten Verlaufskarte; `null` zeigt die aktuelle Karte.
+  const [reviewing, setReviewing] = useState<number | null>(null);
   const labels = directionLabels(list, direction);
 
   if (initialOpen.length === 0) {
@@ -64,6 +92,7 @@ export function SessionView({
   }
 
   const remaining = initialOpen.length - learnedKeys.size;
+  const reviewed = reviewing === null ? undefined : history[reviewing];
 
   const handleRate = (rating: Rating): void => {
     void (async () => {
@@ -75,6 +104,7 @@ export function SessionView({
         newlyLearned: newlyLearned ? [...tally.newlyLearned, entry.wordA] : tally.newlyLearned,
       };
       setTally(nextTally);
+      setHistory((previous) => [...previous, { entry, rating }]);
 
       const nextLearned = newlyLearned ? new Set(learnedKeys).add(entry.key) : learnedKeys;
       setLearnedKeys(nextLearned);
@@ -90,6 +120,14 @@ export function SessionView({
         setDraws((count) => count + 1);
       }
     })();
+  };
+
+  const back = (): void => {
+    setReviewing((index) => (index === null ? history.length - 1 : Math.max(0, index - 1)));
+  };
+
+  const forward = (): void => {
+    setReviewing((index) => (index === null || index + 1 >= history.length ? null : index + 1));
   };
 
   return (
@@ -109,18 +147,40 @@ export function SessionView({
 
       <progress
         className="session-bar"
-        value={list.entries.length - remaining}
-        max={list.entries.length}
+        value={initialOpen.length - remaining}
+        max={initialOpen.length}
       />
 
-      {/* Neuer Key je Ziehung, damit auch ein wiederholtes Wort verdeckt startet. */}
-      <Card
-        key={draws}
-        entry={entry}
-        direction={direction}
-        labels={labels}
-        onRate={handleRate}
-      />
+      {reviewed !== undefined ? (
+        <ReviewCard
+          entry={reviewed.entry}
+          direction={direction}
+          labels={labels}
+          rating={reviewed.rating}
+        />
+      ) : (
+        // Neuer Key je Ziehung, damit auch ein wiederholtes Wort verdeckt startet.
+        <Card
+          key={draws}
+          entry={entry}
+          direction={direction}
+          labels={labels}
+          onRate={handleRate}
+        />
+      )}
+
+      {history.length > 0 ? (
+        <nav className="review-nav" aria-label="Bewertete Karten">
+          <button type="button" className="button" onClick={back} disabled={reviewing === 0}>
+            ← Zurück
+          </button>
+          {reviewing !== null ? (
+            <button type="button" className="button" onClick={forward}>
+              Weiter →
+            </button>
+          ) : null}
+        </nav>
+      ) : null}
     </section>
   );
 }

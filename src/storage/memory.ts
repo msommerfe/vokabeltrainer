@@ -1,6 +1,6 @@
 import { exerciseProgressKey, progressKey } from '../domain/entryKey';
 import type { ExerciseProgressRecord, ProgressRecord, VocabList } from '../domain/types';
-import { normalizeStoredList } from './operations';
+import { normalizeExerciseRecord, normalizeStoredList } from './operations';
 import type { VocabStore } from './types';
 
 /** Speicher im Arbeitsspeicher — für Tests und als Rückfallebene ohne IndexedDB. */
@@ -45,7 +45,9 @@ export function createMemoryStore(): VocabStore {
       }
     },
     async listExerciseProgress(listId) {
-      return [...exerciseProgress.values()].filter((record) => record.listId === listId);
+      return [...exerciseProgress.values()]
+        .filter((record) => record.listId === listId)
+        .map(normalizeExerciseRecord);
     },
     async saveExerciseProgress(record) {
       exerciseProgress.set(exerciseKeyOf(record), record);

@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { answerWord, promptWord, type Direction, type VocabEntry } from '../domain/types';
+import {
+  answerWord,
+  promptWord,
+  type Direction,
+  type Rating,
+  type VocabEntry,
+} from '../domain/types';
 import { useCardGestures } from './gestures/useCardGestures';
-import type { Rating } from '../domain/types';
 
 interface CardProps {
   entry: VocabEntry;
@@ -55,21 +60,7 @@ export function Card({ entry, direction, labels, onRate }: CardProps) {
         <p className="card-word">{promptWord(entry, direction)}</p>
 
         {revealed ? (
-          <div className="card-answer">
-            <p className="card-label">{labels.to}</p>
-            <p className="card-word card-word--answer">{answerWord(entry, direction)}</p>
-
-            {entry.examples.length > 0 ? (
-              <ul className="card-examples">
-                {entry.examples.map((example, index) => (
-                  <li key={index}>
-                    <span>{example.sentenceA}</span>
-                    <span className="card-example-b">{example.sentenceB}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
+          <CardAnswer entry={entry} direction={direction} label={labels.to} />
         ) : (
           <p className="card-hint">Berühren zum Anzeigen, doppelt tippen zum Festhalten</p>
         )}
@@ -82,6 +73,57 @@ export function Card({ entry, direction, labels, onRate }: CardProps) {
       <div className="card-legend" aria-hidden="true">
         <span className="card-legend--bad">◀ nicht gewusst</span>
         <span className="card-legend--good">gewusst ▶</span>
+      </div>
+    </div>
+  );
+}
+
+function CardAnswer({
+  entry,
+  direction,
+  label,
+}: {
+  entry: VocabEntry;
+  direction: Direction;
+  label: string;
+}) {
+  return (
+    <div className="card-answer">
+      <p className="card-label">{label}</p>
+      <p className="card-word card-word--answer">{answerWord(entry, direction)}</p>
+
+      {entry.examples.length > 0 ? (
+        <ul className="card-examples">
+          {entry.examples.map((example, index) => (
+            <li key={index}>
+              <span>{example.sentenceA}</span>
+              <span className="card-example-b">{example.sentenceB}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+interface ReviewCardProps {
+  entry: VocabEntry;
+  direction: Direction;
+  labels: { from: string; to: string };
+  rating: Rating;
+}
+
+/** Bereits bewertete Karte: aufgedeckt, mit Bewertung und ohne Gesten. */
+export function ReviewCard({ entry, direction, labels, rating }: ReviewCardProps) {
+  return (
+    <div className="card-stage">
+      <div className="card card--static card--review">
+        <p className={`review-badge review-badge--${rating}`}>
+          {rating === 'known' ? 'Gewusst' : 'Nicht gewusst'}
+        </p>
+        <p className="card-label">{labels.from}</p>
+        <p className="card-word">{promptWord(entry, direction)}</p>
+        <CardAnswer entry={entry} direction={direction} label={labels.to} />
       </div>
     </div>
   );

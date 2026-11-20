@@ -1,13 +1,15 @@
 import { useMemo, useRef, useState } from 'react';
 import type { ExerciseOutcome } from '../app/useLibrary';
 import { exerciseLabel, openExercises, type ExerciseProgressIndex } from '../domain/exercises';
-import { drawNext, emptyTally, type SessionTally } from '../domain/session';
+import { drawNext, emptyTally, pickSession, type SessionTally } from '../domain/session';
+import type { StudySettings } from '../domain/settings';
 import type { Exercise, VocabList } from '../domain/types';
 import { ChoiceCard, GapCard } from './ExerciseCards';
 
 interface ExerciseSessionViewProps {
   list: VocabList;
   progress: ExerciseProgressIndex;
+  settings: StudySettings;
   onAnswer: (exerciseKey: string, correct: boolean) => Promise<ExerciseOutcome>;
   onFinish: (tally: SessionTally) => void;
   onLeave: () => void;
@@ -22,6 +24,7 @@ interface Recorded {
 export function ExerciseSessionView({
   list,
   progress,
+  settings,
   onAnswer,
   onFinish,
   onLeave,
@@ -29,8 +32,18 @@ export function ExerciseSessionView({
 }: ExerciseSessionViewProps) {
   // Offene Übungen werden beim Betreten festgelegt; währenddessen fallen nur neu gelöste heraus.
   const progressAtStart = useRef(progress);
+  const settingsAtStart = useRef(settings);
   const initialOpen = useMemo(
-    () => openExercises(list.exercises, progressAtStart.current, list.id),
+    () =>
+      pickSession(
+        openExercises(
+          list.exercises,
+          progressAtStart.current,
+          list.id,
+          settingsAtStart.current.threshold,
+        ),
+        settingsAtStart.current.sessionSize,
+      ),
     [list.exercises, list.id],
   );
 
@@ -114,8 +127,8 @@ export function ExerciseSessionView({
 
       <progress
         className="session-bar"
-        value={list.exercises.length - remaining}
-        max={list.exercises.length}
+        value={initialOpen.length - remaining}
+        max={initialOpen.length}
       />
 
       {exercise.kind === 'gap' ? (
