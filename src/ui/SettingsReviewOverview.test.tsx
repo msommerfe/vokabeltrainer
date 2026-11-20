@@ -88,6 +88,15 @@ describe('SettingsView', () => {
     expect(onChange.mock.calls[0]?.[0]).toMatchObject({ exercises: { sessionSize: null } });
   });
 
+  it('bietet die Beispiel-JSON zum Herunterladen an', () => {
+    renderSettings();
+
+    const link = screen.getByRole('link', { name: 'Beispiel-JSON herunterladen' });
+
+    expect(link.getAttribute('href')).toMatch(/samples\/beispiel-vokabelliste\.json$/);
+    expect(link.getAttribute('download')).toBe('beispiel-vokabelliste.json');
+  });
+
   it('übernimmt eine Schwelle von 11 nicht und zeigt wieder den gültigen Wert', () => {
     const onChange = renderSettings();
     const threshold = screen.getByLabelText<HTMLInputElement>('Richtig in Folge bis gelernt');

@@ -74,6 +74,17 @@ describe.each(SAMPLES)('mitgelieferte Liste $name', ({ file, name }) => {
   });
 });
 
+describe('Beispieldatei zum Herunterladen', () => {
+  it('liefert ohne Meldungen 10 Einträge, einen Lückentext und eine Auswahlfrage mit Erklärung', () => {
+    const { list, issues } = loadSample('beispiel-vokabelliste.json');
+
+    expect(issues).toEqual([]);
+    expect(list.entries).toHaveLength(10);
+    expect(list.exercises.map((exercise) => exercise.kind)).toEqual(['gap', 'choice']);
+    expect(list.exercises.every((exercise) => exercise.explanation !== undefined)).toBe(true);
+  });
+});
+
 describe('Startdatensatz insgesamt', () => {
   it('liefert drei Listen mit zusammen 300 Einträgen', () => {
     const total = SAMPLES.reduce(

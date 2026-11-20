@@ -26,6 +26,8 @@ Karteikarten-Trainer für eigene Vokabellisten. Installierbare PWA, offline nutz
 
 Eine geänderte Schwelle wirkt sofort auch auf den bisherigen Fortschritt. Wird sie gesenkt, gelten Wörter mit genügend Treffern sofort als gelernt. Wird sie erhöht, werden bereits gelernte Wörter wieder abgefragt. Die Einstellungen bleiben auf dem Gerät gespeichert.
 
+Außerdem bieten die Einstellungen **Beispiel-JSON herunterladen** an: eine Vorlage im Importformat mit 10 Einträgen, einem Lückentext und einer Auswahlfrage ([public/samples/beispiel-vokabelliste.json](public/samples/beispiel-vokabelliste.json)). Der Download funktioniert auch offline.
+
 Alle Daten bleiben auf dem Gerät. Es gibt kein Backend und keine Übertragung an Dritte.
 
 ## Mitgelieferte Wortlisten

@@ -55,3 +55,18 @@ Geänderte Einstellungen MÜSSEN sofort wirksam werden, einen Neustart der App �
 - **WHEN** die gespeicherten Einstellungen nicht gelesen werden können
 - **THEN** gelten die Standardwerte
 - **AND** die App bleibt bedienbar
+
+### Requirement: Beispieldatei herunterladen
+
+Der Einstellungsbildschirm MUSS eine Beispiel-JSON-Datei zum Herunterladen anbieten, die als Vorlage für eigene Listen dient. Sie MUSS 10 Einträge und 2 Übungen (ein Lückentext und eine Auswahlfrage, jeweils mit Erklärung) enthalten und ohne Meldungen importierbar sein. Der Download MUSS auch ohne Netzverbindung funktionieren.
+
+#### Scenario: Beispieldatei herunterladen
+
+- **WHEN** der Nutzer in den Einstellungen "Beispiel-JSON herunterladen" wählt
+- **THEN** lädt das Gerät eine JSON-Datei herunter
+
+#### Scenario: Beispieldatei importieren
+
+- **WHEN** der Nutzer die heruntergeladene Beispieldatei unverändert importiert
+- **THEN** entsteht eine Liste mit 10 Einträgen und 2 Übungen
+- **AND** es werden keine übersprungenen Einträge oder Übungen gemeldet

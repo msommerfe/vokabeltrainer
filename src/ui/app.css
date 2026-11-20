@@ -246,10 +246,12 @@ h2 {
 }
 
 .direction-label {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.2;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .direction-stats {
@@ -604,6 +606,18 @@ progress::-moz-progress-bar {
   grid-column: 1 / -1;
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.settings-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+a.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 /* Kompaktübersicht */

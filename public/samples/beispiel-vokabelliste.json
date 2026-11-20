@@ -1,0 +1,41 @@
+{
+  "name": "Beispielliste Spanisch",
+  "languageA": "Spanisch",
+  "languageB": "Deutsch",
+  "entries": [
+    { "wordA": "la casa", "wordB": "das Haus", "examples": [
+      { "sentenceA": "La casa es grande.", "sentenceB": "Das Haus ist groß." } ] },
+    { "wordA": "el perro", "wordB": "der Hund", "examples": [
+      { "sentenceA": "El perro duerme.", "sentenceB": "Der Hund schläft." } ] },
+    { "wordA": "el libro", "wordB": "das Buch", "examples": [
+      { "sentenceA": "Leo un libro.", "sentenceB": "Ich lese ein Buch." } ] },
+    { "wordA": "la mesa", "wordB": "der Tisch", "examples": [
+      { "sentenceA": "El café está en la mesa.", "sentenceB": "Der Kaffee steht auf dem Tisch." } ] },
+    { "wordA": "el agua", "wordB": "das Wasser" },
+    { "wordA": "grande", "wordB": "groß", "examples": [
+      { "sentenceA": "Es una ciudad grande.", "sentenceB": "Das ist eine große Stadt." } ] },
+    { "wordA": "pequeño", "wordB": "klein", "examples": [
+      { "sentenceA": "El gato es pequeño.", "sentenceB": "Die Katze ist klein." } ] },
+    { "wordA": "hoy", "wordB": "heute", "examples": [
+      { "sentenceA": "Hoy hace sol.", "sentenceB": "Heute scheint die Sonne." } ] },
+    { "wordA": "hablar", "wordB": "sprechen", "examples": [
+      { "sentenceA": "hablo · hablas · habla · hablamos · habláis · hablan", "sentenceB": "ich spreche · du sprichst · er/sie spricht · wir sprechen · ihr sprecht · sie sprechen" },
+      { "sentenceA": "Hablo un poco de español.", "sentenceB": "Ich spreche ein bisschen Spanisch." } ] },
+    { "wordA": "comer", "wordB": "essen", "examples": [
+      { "sentenceA": "Comemos a las dos.", "sentenceB": "Wir essen um zwei." } ] }
+  ],
+  "exercises": [
+    {
+      "type": "gap",
+      "sentence": "Yo {hablo} español y tú {hablas} alemán.",
+      "explanation": "hablar im Präsens: yo hablo, tú hablas. Lücken stehen in geschweiften Klammern."
+    },
+    {
+      "type": "choice",
+      "question": "La casa es ___.",
+      "options": ["grande", "grandes", "pequeños"],
+      "answer": "grande",
+      "explanation": "la casa ist Singular, deshalb grande. answer muss genau einer Option entsprechen."
+    }
+  ]
+}

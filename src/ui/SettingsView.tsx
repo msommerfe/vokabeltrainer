@@ -47,9 +47,25 @@ export function SettingsView({ settings, onChange, onDone }: SettingsViewProps) 
           update('exercises', patch);
         }}
       />
+
+      <div className="settings-group">
+        <h3 className="settings-title">Vorlage für eigene Listen</h3>
+        <p className="settings-hint">
+          Beispiel im Importformat mit 10 Einträgen, einem Lückentext und einer Auswahlfrage.
+        </p>
+        <a
+          className="button"
+          href={`${import.meta.env.BASE_URL}samples/${EXAMPLE_FILE}`}
+          download={EXAMPLE_FILE}
+        >
+          Beispiel-JSON herunterladen
+        </a>
+      </div>
     </section>
   );
 }
+
+export const EXAMPLE_FILE = 'beispiel-vokabelliste.json';
 
 function SettingsGroup({
   title,

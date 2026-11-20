@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { summarizeExercises, type ExerciseProgressIndex } from '../domain/exercises';
+import { languageCodes } from '../domain/languageCode';
 import { summarizeProgress } from '../domain/progress';
 import type { Settings } from '../domain/settings';
 import { DIRECTIONS, directionLabels } from '../domain/types';
@@ -120,6 +121,10 @@ export function LibraryView({
             <div className="direction-grid">
               {DIRECTIONS.map((direction) => {
                 const labels = directionLabels(list, direction);
+                const codes = languageCodes(list.languageA, list.languageB);
+                const short =
+                  direction === 'a-to-b' ? `${codes.a} → ${codes.b}` : `${codes.b} → ${codes.a}`;
+                const full = `${labels.from} → ${labels.to}`;
                 const summary = summarizeProgress(
                   list.entries,
                   progress,
@@ -136,8 +141,9 @@ export function LibraryView({
                     className="direction-button"
                     onClick={() => onStart(list.id, direction)}
                   >
-                    <span className="direction-label">
-                      {labels.from} → {labels.to}
+                    <span className="direction-label" title={full}>
+                      <span aria-hidden="true">{short}</span>
+                      <span className="visually-hidden">{full}</span>
                     </span>
                     <span className={`direction-stats${done ? ' direction-stats--done' : ''}`}>
                       <span aria-hidden="true">

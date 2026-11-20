@@ -29,6 +29,8 @@
 - [x] 5.2 Knopf „Einstellungen“ in der Listenübersicht und die neuen Bildschirme in `App.tsx` einbinden, Einstellungen an Übersicht, Sitzungen und Kompaktübersicht durchreichen und im Browser verifizieren, dass eine geänderte Schwelle sofort in der Listenübersicht wirkt
 - [x] 5.3 Einstellungen, Kompaktübersicht und Zurückblättern im Browser bei 360 px Breite prüfen und verifizieren, dass kein horizontales Scrollen nötig ist
 - [x] 5.4 `README.md` um Einstellungen, Zurückblättern und Kompaktübersicht ergänzen
+- [x] 5.5 Beispieldatei mit 10 Einträgen und 2 Übungen unter `public/samples/` anlegen und per Test verifizieren, dass sie ohne Meldungen genau 10 Einträge, einen Lückentext und eine Auswahlfrage mit Erklärung liefert (Spec `app-settings`)
+- [x] 5.6 Link „Beispiel-JSON herunterladen“ in den Einstellungen ergänzen, per Komponententest Ziel und `download`-Attribut verifizieren und im Browser prüfen, dass die Datei geladen wird
 
 ## 6. Abschließende Integrationsprüfung
 
